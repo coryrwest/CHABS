@@ -1,0 +1,69 @@
+﻿
+<h3>Update the Working Budget spreadsheet</h3>
+<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-3">
+			@using (Ajax.BeginForm("UpdateTransactions", null, new AjaxOptions() {
+				HttpMethod = "POST",
+				UpdateTargetId = "trans-results",
+				OnBegin = "TransAjaxBegin",
+				OnComplete = "AjaxComplete"
+			}, new {@class = "form-horizontal"})) {
+				@Html.ValidationSummary(true, "", new {@class = "text-danger"})
+				<form class="form-horizontal">
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" class="btn btn-default btn-block">Update Transactions</button>
+						</div>
+					</div>
+				</form>
+			}
+		</div>
+		<div class="col-md-6" id="trans-results"></div>
+	</div>
+	<div class="row">
+		<div class="col-md-3">
+		@using (Ajax.BeginForm("UpdateSpreadsheet", "Dropbox", null, new AjaxOptions() {
+			HttpMethod = "POST",
+			UpdateTargetId = "dropbox-results",
+			OnBegin = "DropboxAjaxBegin",
+			OnComplete = "AjaxComplete"
+		}, new { @class = "form-horizontal" })) {
+			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+			<form class="form-horizontal">
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" class="btn btn-default btn-block">Update Spreadsheet</button>
+					</div>
+				</div>
+			</form>
+		}
+		</div>
+		<div class="col-md-6" id="dropbox-results"></div>
+	</div>
+</div>
+
+
+@section Scripts {
+	@Scripts.Render("~/bundles/form")
+	@Scripts.Render("~/bundles/ajax")
+
+	<script>
+		function TransAjaxBegin() {
+			$('#trans-results').html('');
+			$('#trans-results').html('Loading ...');
+		}
+		function DropboxAjaxBegin() {
+			$('#dropbox-results').html('');
+			$('#dropbox-results').html('Loading ...');
+		}
+
+		function AjaxComplete() {
+			
+		}
+
+		$(document).ready(function () {
+
+		});
+	</script>
+}

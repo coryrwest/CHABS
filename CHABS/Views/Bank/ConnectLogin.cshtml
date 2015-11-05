@@ -1,0 +1,61 @@
+﻿@model CHABS.Models.ConnectLoginViewModel
+
+@{
+	ViewBag.Title = "Connect with ";
+}
+
+<h2>@ViewBag.Title @Model.Login.Name</h2>
+<div class="row">
+	<div class="col-md-6">
+		<div class="col-md-12">
+			@using (Ajax.BeginForm("ConnectLogin", null, new AjaxOptions() {
+				HttpMethod = "POST",
+				UpdateTargetId = "results",
+				OnBegin = "AjaxBegin",
+				OnComplete = "AjaxComplete"
+			}, new { @class = "form-horizontal" })) {
+				@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+				<form class="form-horizontal">
+					<div class="form-group">
+						@Html.LabelFor(m => m.Username, new { @class = "col-md-3 control-label" })
+						<div class="col-md-9">
+							@Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
+							@Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
+						</div>
+					</div>
+					<div class="form-group">
+						@Html.LabelFor(m => m.Password, new { @class = "col-md-3 control-label" })
+						<div class="col-md-9">
+							@Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+							@Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" class="btn btn-default">Connect Login</button>
+						</div>
+					</div>
+					@Html.HiddenFor(m => m.LoginId, new { Value = Model.Login.Id })
+				</form>
+			}
+		</div>
+	</div>
+	<div class="col-md-6" id="results">
+		
+	</div>
+</div>
+
+@section Scripts {
+	@Scripts.Render("~/bundles/form")
+	@Scripts.Render("~/bundles/ajax")
+
+	<script>
+		function AjaxBegin() {
+			$('#results').html('Loading...');
+		}
+
+		function AjaxComplete() {
+			$('#results').html('');
+		}
+	</script>
+}

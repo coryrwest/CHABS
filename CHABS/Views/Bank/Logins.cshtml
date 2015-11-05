@@ -1,0 +1,89 @@
+﻿@using System.Configuration
+@using CHABS.Models
+@model CHABS.Models.BankLoginViewModel
+@{
+	ViewBag.Title = "Logins";
+}
+
+<h2>@ViewBag.Title</h2>
+<div class="row">
+	<div class="col-md-12" id="results">
+		@Html.Partial("LoginListPartial", new LoginListViewModel(Model.CurrentLogins))
+	</div>
+</div>
+<hr />
+<div class="row">
+	<div class="col-md-12">
+		<h3>Add Login</h3>
+		<div class="col-md-12">
+			@using (Ajax.BeginForm("Logins", null, new AjaxOptions() {
+				HttpMethod = "POST",
+				UpdateTargetId = "results",
+				OnBegin = "AjaxBegin",
+				OnComplete = "AjaxComplete"
+			}, new { @class = "form-horizontal", @id = "plaid-form" })) {
+				@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+				<form class="form-horizontal">
+					<div class="form-group">
+						@Html.LabelFor(m => m.Name, new { @class = "col-md-3 control-label" })
+						<div class="col-md-9">
+							@Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+							@Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+						</div>
+					</div>
+					@*<div class="form-group">
+						@Html.LabelFor(m => m.Institution, new { @class = "col-md-3 control-label" })
+						<div class="col-md-9">
+							@Html.DropDownListFor(m => m.Institution, Model.InstitutionList, new { @class = "form-control" })
+							@Html.ValidationMessageFor(m => m.Institution, "", new { @class = "text-danger" })
+						</div>
+					</div>*@
+					@*<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" class="btn btn-default">Add Login</button>
+						</div>
+					</div>*@
+				</form>
+			}
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	@Scripts.Render("~/bundles/form")
+	@Scripts.Render("~/bundles/ajax")
+
+	<script>
+		function AjaxBegin() {
+			$('#results').html('');
+		}
+
+		function AjaxComplete() {
+		}
+
+		$(document).ready(function () {
+
+		});
+
+		function deleteClick() {
+			var id = $(this).attr('id');
+			$.ajax({
+				url: "@Url.Action("DeleteLogin")" + "?loginId=" + id,
+				success: function (data) {
+					$('#results').html(data);
+				}
+			});
+		}
+
+		$(document).on('click', '.delete-account', deleteClick);
+	</script>
+
+	<script
+	src="https://cdn.plaid.com/link/stable/link-initialize.js"
+	data-client-name="CHABS"
+	data-form-id="plaid-form"
+	data-key="@ConfigurationManager.AppSettings["PlaidKey"]"
+	data-product="connect"
+	data-env="tartan">
+	</script>
+}

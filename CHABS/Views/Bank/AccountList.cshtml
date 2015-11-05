@@ -1,0 +1,21 @@
+﻿@model CHABS.Models.AccountListViewModel
+
+<h3>Accounts for @Model.LoginName</h3>
+<div class="col-md-12">
+	<table class="table table-striped">
+		<tbody>
+			<tr>
+				<th>Name</th>
+				<th>Show in transaction list?</th>
+				<th></th>
+			</tr>
+			@foreach (var account in Model.Accounts) {
+				<tr>
+					<td>@account.Name</td>
+					<td>@account.Shown</td>
+					<td><a class="btn btn-sm btn-info" href="@Url.Action("ToggleAccount", new { accountId = account.Id, loginId = account.LoginId })">Toggle</a></td>
+				</tr>
+			}
+		<tbody>
+	</table>
+</div>

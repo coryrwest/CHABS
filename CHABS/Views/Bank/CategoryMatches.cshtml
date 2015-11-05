@@ -1,0 +1,54 @@
+﻿@using CHABS.Models
+@model CHABS.Models.CategoryMatchesViewModel
+
+<h3>Matching for @Model.CategoryName</h3>
+<div class="col-md-12">
+	<div class="col-md-6">
+		@using (Ajax.BeginForm("CategoryMatches", null, new AjaxOptions() {
+				HttpMethod = "POST",
+				UpdateTargetId = "results",
+				OnBegin = "AjaxBegin",
+				OnComplete = "AjaxComplete"
+			}, new { @class = "form-horizontal" })) {
+			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+			<form class="form-horizontal">
+				<div class="form-group">
+					@Html.LabelFor(m => m.Match, new {@class = "col-md-3 control-label"})
+					<div class="col-md-9">
+						@Html.TextBoxFor(m => m.Match, new {@class = "form-control"})
+						@Html.ValidationMessageFor(m => m.Match, "", new {@class = "text-danger"})
+					</div>
+				</div>
+				@Html.HiddenFor(m => m.CategoryId)
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" class="btn btn-default">Add Match</button>
+					</div>
+				</div>
+			</form>
+			}
+	</div>
+	<div class="col-md-6" id="results">
+		@Html.Partial("CategoryMatchListPartial", new CategoryMatchesListViewModel(Model.CurrentCategoryMatches))
+	</div>
+</div>
+
+
+@section Scripts {
+	@Scripts.Render("~/bundles/form")
+	@Scripts.Render("~/bundles/ajax")
+
+	<script>
+		function AjaxBegin() {
+			$('#results').html('');
+		}
+
+		function AjaxComplete() {
+			$('form').last()[0].reset();
+		}
+
+		$(document).ready(function () {
+
+		});
+	</script>
+}

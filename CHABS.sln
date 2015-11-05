@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CHABS", "CHABS\CHABS.csproj", "{F95DEA13-E13B-4A8F-B8C5-4DDDADA8374A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropboxRestAPI", "DropboxRestAPI\DropboxRestAPI.csproj", "{FA69B792-FCFF-4CB1-8435-798112337306}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CHABS.API", "CHABS.API\CHABS.API.csproj", "{E98AF63C-8467-4417-A00B-473F0388D7E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRWestropp.Utilities", "crwestropp\CRWestropp.Utilities\CRWestropp.Utilities.csproj", "{007001DB-18FA-4DA2-8586-2B8655001F3E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F95DEA13-E13B-4A8F-B8C5-4DDDADA8374A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F95DEA13-E13B-4A8F-B8C5-4DDDADA8374A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F95DEA13-E13B-4A8F-B8C5-4DDDADA8374A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F95DEA13-E13B-4A8F-B8C5-4DDDADA8374A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA69B792-FCFF-4CB1-8435-798112337306}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA69B792-FCFF-4CB1-8435-798112337306}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA69B792-FCFF-4CB1-8435-798112337306}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA69B792-FCFF-4CB1-8435-798112337306}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E98AF63C-8467-4417-A00B-473F0388D7E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E98AF63C-8467-4417-A00B-473F0388D7E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E98AF63C-8467-4417-A00B-473F0388D7E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E98AF63C-8467-4417-A00B-473F0388D7E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{007001DB-18FA-4DA2-8586-2B8655001F3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{007001DB-18FA-4DA2-8586-2B8655001F3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{007001DB-18FA-4DA2-8586-2B8655001F3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{007001DB-18FA-4DA2-8586-2B8655001F3E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

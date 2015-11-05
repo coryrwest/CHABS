@@ -1,0 +1,15 @@
+﻿@model CHABS.Models.DropboxViewModel
+
+@{
+	ViewBag.Title = "Authorize";
+}
+
+@if (Model.AlreadyConnected) {
+	<h2>Dropbox has already been connected.</h2>
+} else {
+	<h2>Dropbox was successfully connected.</h2>
+
+	<p>Display Name: @Model.DisplayName</p>
+	<p>Email: @Model.Email</p>
+	<p>@Model.UID</p>
+}
