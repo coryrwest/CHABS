@@ -35,7 +35,7 @@ namespace CHABS.Controllers {
 
 			var model = new BankLoginViewModel();
 			model.CurrentLogins =
-				Service.Logins.GetList(new { UserId = GetCurrentUserGuid() });
+				Service.Logins.GetList(new { HouseholdId = GetHouseholdIdForCurrentUser() });
 			model.InstitutionList = new SelectList(institutions.Pairs, "Key", "Value");
 
 			return View(model);
@@ -61,7 +61,7 @@ namespace CHABS.Controllers {
 			var login = new BankLogin() {
 				Institution = "plaid_link",
 				Name = form["Name"],
-				UserId = GetCurrentUserGuid(),
+				HouseholdId = GetHouseholdIdForCurrentUser(),
 				AccessToken = accessToken
 			};
 			Service.Logins.Upsert(login);
@@ -105,7 +105,7 @@ namespace CHABS.Controllers {
 		public ActionResult DeleteLogin(Guid loginId) {
 			Service.Logins.Delete(loginId);
 
-			var current = Service.Logins.GetList(new { UserId = GetCurrentUserGuid() });
+			var current = Service.Logins.GetList(new { HouseholdId = GetHouseholdIdForCurrentUser() });
 
 			return PartialView("LoginListPartial", new LoginListViewModel(current));
 		}
@@ -137,7 +137,7 @@ namespace CHABS.Controllers {
 		}
 
 		public ActionResult Transactions() {
-			var logins = Service.Logins.GetList(new { userid = GetCurrentUserGuid() }).Select(l => l.Id).ToList();
+			var logins = Service.Logins.GetList(new { householdid = GetHouseholdIdForCurrentUser() }).Select(l => l.Id).ToList();
 
 			var model = new TransactionsViewModel();
 			model.RangeString = "Last 30 days";
@@ -158,12 +158,12 @@ namespace CHABS.Controllers {
 		public ActionResult Categories(CategoriesViewModel model) {
 			Service.Categories.Upsert(new Category() {
 				Name = model.Name,
-				UserId = GetCurrentUserGuid(),
+				HouseholdId = GetHouseholdIdForCurrentUser(),
 				Excluded = model.Excluded
 			});
 
 			model.CurrentCategories =
-				Service.Categories.GetList(new { UserId = GetCurrentUserGuid() });
+				Service.Categories.GetList(new { HouseholdId = GetHouseholdIdForCurrentUser() });
 			return PartialView("CategoryListPartial", new CategoriesListViewModel(model.CurrentCategories));
 		}
 

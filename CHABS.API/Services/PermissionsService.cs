@@ -24,6 +24,16 @@ namespace CHABS.API.Services {
 					return true;
 				}
 				return false;
+			} else if (poco.HasProperty("HouseholdId")) {
+				if (session.Household == null) {
+					return false;
+				}
+				if (session.Household.Id == Guid.Empty) {
+					return false;
+				}
+				if (poco.GetPropValue("HouseholdId").ToGuid() == session.Household.Id) {
+					return true;
+				}
 			}
 			// If we are not user specific then we dont care about permissions
 			return true;

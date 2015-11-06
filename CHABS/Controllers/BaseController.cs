@@ -11,7 +11,28 @@ using Microsoft.AspNet.Identity;
 namespace CHABS.Controllers {
 	public class BaseController : Controller {
 		public Guid GetCurrentUserGuid() {
-			return User.Identity.GetUserId().ToGuid();
+			if (User != null) {
+				return User.Identity.GetUserId().ToGuid();
+			} else {
+				return Guid.Empty;
+			}
+		}
+
+		public Guid GetHouseholdIdForCurrentUser() {
+			return GetHouseholdForCurrentUser().Id;
+		}
+
+		public Household GetHouseholdForCurrentUser(Guid userId = default(Guid)) {
+			if (AppSession.Household == null) {
+				if (userId == Guid.Empty) {
+					userId = GetCurrentUserGuid();
+				}
+				var householdService = new HouseholdService(AppSession);
+				var household = householdService.Households.GetHouseholdForUser(userId);
+				return household;
+			} else {
+				return AppSession.Household;
+			}
 		}
 
 		protected Session AppSession { get; private set; }
@@ -25,7 +46,10 @@ namespace CHABS.Controllers {
 					AppSession = new Session();
 					var UserId = System.Web.HttpContext.Current.User.Identity.GetUserId();
 					if (!UserId.IsNull()) {
-						AppSession.BuildSession(UserId.ToGuid());
+						var household = GetHouseholdForCurrentUser(UserId.ToGuid());
+						AppSession.BuildSession(UserId.ToGuid(), household);
+						// Set the session
+						System.Web.HttpContext.Current.Session.Add("Session", AppSession);
 					}
 				}
 			}
@@ -33,6 +57,7 @@ namespace CHABS.Controllers {
 
 		protected void ClearSession() {
 			AppSession = null;
+			System.Web.HttpContext.Current.Session.Add("Session", null);
 		}
 
 		protected override void OnActionExecuting(ActionExecutingContext filterContext) {

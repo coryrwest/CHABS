@@ -79,8 +79,11 @@ namespace CHABS {
 		public override Task SignInAsync(AppUser user, bool isPersistent, bool rememberBrowser) {
 			// Set the session
 			var AppSession = new Session();
-			AppSession.BuildSession(user.Id.ToGuid());
-			System.Web.HttpContext.Current.Session["Session"] = AppSession;
+			AppSession.BuildSession(user.Id.ToGuid(), null);
+			// Get the current household
+			var service = new HouseholdService(AppSession);
+			AppSession.Household = service.Households.GetHouseholdForUser(user.Id.ToGuid());
+			System.Web.HttpContext.Current.Session.Add("Session", AppSession);
 
 			return base.SignInAsync(user, isPersistent, rememberBrowser);
 		}

@@ -25,14 +25,36 @@ namespace CHABS.API.Services {
 			Session = session;
 		}
 
+		/// <summary>
+		/// Will run before the DataObjects BeforeSave and the actual save.
+		/// daObj will be the DataObject that is saving.
+		/// </summary>
+		/// <param name="isInserting"></param>
+		/// <param name="daObj"></param>
+		protected virtual void BeforeSave(bool isInserting, DataObject daObj) { }
+		/// <summary>
+		/// Will run after the DataObjects AfterSave and the actual save.
+		/// daObj will be the DataObject that is saving.
+		/// </summary>
+		/// <param name="isInserting"></param>
+		/// <param name="daObj"></param>
+		protected virtual void AfterSave(bool isInserting, DataObject daObj) { }
+
 		public T Upsert(T dataObject) {
+			// Get new flag for the isInserting of the save events
+			var wasNew = dataObject.IsNew;
+			// Ebfore save events
+			BeforeSave(wasNew, dataObject);
 			dataObject.BeforeSave();
+			// Save it
 			if (dataObject.IsNew) {
 				Insert(dataObject);
 			} else {
 				Update(dataObject);
 			}
+			// After save events
 			dataObject.AfterSave();
+			AfterSave(wasNew, dataObject);
 			return dataObject;
 		}
 

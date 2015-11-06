@@ -81,6 +81,7 @@
     <Compile Include="Objects\DataObject.cs" />
     <Compile Include="Objects\BankLogin.cs" />
     <Compile Include="Objects\Category.cs" />
+    <Compile Include="Objects\Household.cs" />
     <Compile Include="Objects\Session.cs" />
     <Compile Include="Objects\UserClaim.cs" />
     <Compile Include="Objects\UserSetting.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Objects\BankLoginAccountTransaction.cs" />
     <Compile Include="Services\DataServices\BaseService.cs" />
     <Compile Include="Services\DataServices\BankAccountService.cs" />
+    <Compile Include="Services\DataServices\HouseholdService.cs" />
     <Compile Include="Services\DataServices\UserRoleService.cs" />
     <Compile Include="Services\IBankDataService.cs" />
     <Compile Include="Services\PermissionsService.cs" />

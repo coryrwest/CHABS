@@ -115,12 +115,12 @@ namespace CHABS.Controllers {
 				// Get necessary settings
 				var dropboxToken = Service.UserSettings.GetByUserKey(BaseUserSettingService.SettingKeys.DropboxToken, GetCurrentUserGuid());
 				if (dropboxToken == null) {
-					throw new Exception("Dropbox is not connected. Cannot update spreadsheet. See Settings.");
+					throw new Exception("Dropbox is not connected. Cannot update spreadsheet. Check your dropbox settings anad make sure you are connected.");
 				}
 				var dbPath = Service.UserSettings.GetByUserKey(BaseUserSettingService.SettingKeys.DropboxPath, GetCurrentUserGuid());
 				var dbFile = Service.UserSettings.GetByUserKey(BaseUserSettingService.SettingKeys.DropboxFile, GetCurrentUserGuid());
 				if (dbPath == null || dbFile == null) {
-					throw new Exception("Dropbox is not setup. Cannot update spreadsheet. See Settings.");
+					throw new Exception("Dropbox is not setup. Cannot update spreadsheet. Check your dropbox settings anad make sure you are connected.");
 				}
 
 				// Get the transactions

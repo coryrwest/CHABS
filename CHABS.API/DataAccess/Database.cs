@@ -12,6 +12,7 @@ using Dapper;
 using Newtonsoft.Json;
 using Npgsql;
 using OfficeOpenXml.ConditionalFormatting;
+using OfficeOpenXml.FormulaParsing.Utilities;
 
 namespace CHABS.API.DataAccess {
 	public class Database : IDisposable {
@@ -90,6 +91,36 @@ namespace CHABS.API.DataAccess {
 				return results;
 			}
 		}
+
+		/// <summary>
+		/// Query the database with DataObject wrapping. Returns first result.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="sql"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public T Query<T>(string sql, object parameters) where T : DataObject {
+			using (connection = new NpgsqlConnection(connectionString)) {
+				var results = connection.Query<T>(sql, parameters);
+				var result = results.FirstOrDefault();
+				if (results != null) result.IsNew = false;
+				return result;
+			}
+		}
+
+		///// <summary>
+		///// Query the database for raw data. No DataObject wrapping.
+		///// </summary>
+		///// <typeparam name="T"></typeparam>
+		///// <param name="sql"></param>
+		///// <param name="parameters"></param>
+		///// <returns></returns>
+		//public T RawQuery<T>(string sql, object parameters) {
+		//	using (connection = new NpgsqlConnection(connectionString)) {
+		//		var results = connection.Query<T>(sql, parameters);
+		//		return results;
+		//	}
+		//}
 
 		public void Close() {
 			connection.Close();

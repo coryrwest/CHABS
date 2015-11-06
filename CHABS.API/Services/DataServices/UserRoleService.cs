@@ -27,7 +27,7 @@ namespace CHABS.API.Services {
 		}
 
 		/// <summary>
-		/// Get a user by email or username.
+		/// Get a user by email or username. Will return null if there is no user.
 		/// </summary>
 		/// <param name="email"></param>
 		/// <returns></returns>
@@ -38,6 +38,20 @@ namespace CHABS.API.Services {
 
 		public User GetById(Guid id) {
 			return base.GetById(id);
+		}
+
+		protected override void AfterSave(bool isInserting, DataObject daObj) {
+			// Create a new household for this user and map it
+			if (isInserting) {
+				var service = new HouseholdService(Session);
+				var household = new Household() {
+					Name = (daObj as User).Email
+				};
+				service.Households.Upsert(household);
+				service.HouseholdMaps.AddUserToHousehold(daObj.Id, household.Id);
+			}
+
+			base.AfterSave(isInserting, daObj);
 		}
 	}
 

@@ -29,13 +29,13 @@ namespace CHABS.API.Services {
 		}
 
 		public List<Category> GetAll() {
-			var where = string.Format("where userid = '{0}' order by sort", Session.UserId);
+			var where = string.Format("where householdid = '{0}' order by sort", Session.Household.Id);
 			return GetList(where);
 		}
 
 		public Category FindCategoryMatch(string transactionDescription) {
-			string query = string.Format("select categoryid, match from category_matches join categories on categories.id = categoryid where categories.userid = @userid");
-			var matches = db.Query(query, new { userid = Session.UserId });
+			string query = string.Format("select categoryid, match from category_matches join categories on categories.id = categoryid where categories.householdid = @householdid");
+			var matches = db.Query(query, new { householdid = Session.Household.Id });
 			Guid categoryId = Guid.Empty;
 			foreach (dynamic match in matches) {
 				if (transactionDescription.ToLower().Contains(match.match.ToLower())) {

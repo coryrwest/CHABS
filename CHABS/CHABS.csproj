@@ -194,6 +194,7 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DropboxController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\HouseholdController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -206,6 +207,7 @@
     <Compile Include="Models\AppUserStore.cs" />
     <Compile Include="Models\BankViewModels.cs" />
     <Compile Include="Models\DropBoxViewModels.cs" />
+    <Compile Include="Models\HouseholdModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MiscModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -388,6 +390,7 @@
     <Content Include="Views\Dropbox\SettingsPartial.cshtml" />
     <Content Include="Views\Bank\Update.cshtml" />
     <Content Include="Views\Shared\CallbackStatus.cshtml" />
+    <Content Include="Views\Household\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
