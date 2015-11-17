@@ -58,7 +58,7 @@ namespace CHABS.API.WorkingBudget {
 		}
 
 		public void AddDataRow(dynamic data) {
-			var lastEmptyRow = Navigation.GetLastFullEmptyRow(MonthTransactionsWS);
+			var lastEmptyRow = Navigation.GetLastFullEmptyRow(MonthTransactionsWS, "A", "B", "C", "D", "E", "F", "G", "H");
 
 			var cell = MonthTransactionsWS.Cells[lastEmptyRow.Address];
 
@@ -68,34 +68,31 @@ namespace CHABS.API.WorkingBudget {
 			}
 
 			// Date
-			cell.Value = DateTime.Parse(data.date.ToString()).ToOADate();
+			cell.Value = DateTime.Parse(data.Date.ToString()).ToOADate();
 			cell.Style.Font.Bold = true;
 			cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
 			cell.Style.Numberformat.Format = "m/d/yyyy";
 			// Amount
 			cell = cell.NextColumn();
-			var amount = data.amount.ToString();
-			amount = Regex.Replace(amount, "[^+.0-9]", "");
-			if (amount.IndexOf("+") != -1) {
-				cell.Value = amount.ToDecimal();
-			} else {
-				cell.Value = amount.ToDecimal() * -1;
-			}
+			string amount = data.Amount.ToString();
+			amount = Regex.Replace(amount, "[^+-.0-9]", "");
+			cell.Value = amount.ToDecimal();
+			cell.Style.Numberformat.Format = "_($* #,##0.00_);_($* (#,##0.00);_($* \" - \"??_);_(@_)";
 			// Description
 			cell = cell.NextColumn();
-			cell.Value = data.description.ToString();
+			cell.Value = data.Description.ToString();
 			// Source
 			cell = cell.NextColumn();
-			cell.Value = data.source.ToString();
+			cell.Value = data.Source.ToString();
 			cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 			// Category
 			cell = cell.NextColumn();
-			if (data.category != null) {
-				cell.Value = data.category.ToString();
+			if (data.Category != null) {
+				cell.Value = data.Category.ToString();
 			}
 			// TransID
 			cell = cell.NextColumn(3);
-			cell.Value = data.transactionId.ToString();
+			cell.Value = data.ServiceId.ToString();
 		}
 
 		#region Private Members
@@ -106,19 +103,32 @@ namespace CHABS.API.WorkingBudget {
 		/// <returns></returns>
 		private ExcelWorksheet GetCurrentMonthTransactionsWorksheet() {
 			// Get the worksheet for the current month
-			var name = string.Format("{0} Transactions", DateTime.Now.ToString("MMMM yyyy"));
+			var formattedCurrentMonth = DateTime.Now.ToString("MMMM yyyy");
+			var name = string.Format("{0} Transactions", formattedCurrentMonth);
 			var worksheet = workbook.Worksheets[name];
+			var mostCurrentSheetMonth = DateTime.Now.AddDays(-30).ToString("MMMM yyyy");
 
 			if (worksheet == null) {
 				// If we fail then we have to add it.
-				var lastMonthName = string.Format("{0} Transactions", DateTime.Now.AddDays(-30).ToString("MMMM yyyy"));
-				worksheet = workbook.Worksheets.Add(name, workbook.Worksheets[lastMonthName]);
-				// TODO: Delete data after copy
+				var lastMonthName = string.Format("{0} Transactions", mostCurrentSheetMonth);
+				worksheet = workbook.Worksheets[lastMonthName];
+				if (worksheet == null) {
+					// Go back one more month
+					mostCurrentSheetMonth = DateTime.Now.AddDays(-60).ToString("MMMM yyyy");
+					var lastTwoMonthName = string.Format("{0} Transactions", mostCurrentSheetMonth);
+					worksheet = workbook.Worksheets[lastTwoMonthName];
+				}
+				worksheet = workbook.Worksheets.Add(name, worksheet);
+				// Move it to the front
+				workbook.Worksheets.MoveToStart(name);
+				// Delete data after copy
+				// TODO: Does this mess up formatting?
+				worksheet.DeleteRow(2, 200);
 
 				// We also need to copy the summary sheet
-				var summaryName = DateTime.Now.ToString("MMMM yyyy");
-				var lastMonthSummaryName = DateTime.Now.AddDays(-30).ToString("MMMM yyyy");
-				workbook.Worksheets.Add(summaryName, workbook.Worksheets[lastMonthSummaryName]);
+				workbook.Worksheets.Add(formattedCurrentMonth, workbook.Worksheets[mostCurrentSheetMonth]);
+				// Move it to the front
+				workbook.Worksheets.MoveToStart(formattedCurrentMonth);
 			}
 
 			return worksheet;

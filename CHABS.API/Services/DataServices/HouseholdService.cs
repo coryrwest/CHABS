@@ -81,9 +81,8 @@ namespace CHABS.API.Services {
 			// Add them to the new household
 			db.Execute(
 				@"	INSERT INTO householdusermap (userid, householdid) 
-					SELECT @UserId as userid, @HouseholdId as householdid 
-					from householdusermap 
-					where not (userid in (select userid from householdusermap where userid = @UserId))",
+					SELECT @UserId as userid, @HouseholdId as householdid  
+					where not @UserId in (select userid from householdusermap where userid = @UserId)",
 				new { UserId = userid, HouseholdId = householdId });
 		}
 

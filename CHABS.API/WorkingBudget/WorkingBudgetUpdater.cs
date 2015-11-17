@@ -29,14 +29,14 @@ namespace CHABS.API.WorkingBudget {
 				}
 			}
 			// Fuzzy filter transactions
-			foreach (BankLoginAccountTransaction transaction in newTransactions) {
+			//foreach (BankLoginAccountTransaction transaction in newTransactions) {
 				
-			}
-
-			//// Add the transactions to the document
-			//foreach (dynamic newTransaction in newTransactions) {
-			//	fileHandler.AddDataRow(newTransaction);
 			//}
+
+			// Add the transactions to the document
+			foreach (dynamic newTransaction in newTransactions) {
+				fileHandler.AddDataRow(newTransaction);
+			}
 
 			return fileHandler.GetByteArray();
 		}

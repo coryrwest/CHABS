@@ -124,7 +124,7 @@ namespace CHABS.Controllers {
 				}
 
 				// Get the transactions
-				var logins = BankDataService.Logins.GetUserLoginIds(GetCurrentUserGuid());
+				var logins = BankDataService.Logins.GetHouseholdLoginIds(GetHouseholdIdForCurrentUser());
 				var transactions = BankDataService.Transactions.GetLast30DaysTransactions(logins);
 
 				// Get the xls file
@@ -145,7 +145,7 @@ namespace CHABS.Controllers {
 
 					// Replace file after update
 					using (var stream = new MemoryStream(budgetFile)) {
-						//client.Core.Metadata.FilesPutAsync(stream, Path.Combine(dbPath.SettingValue, dbFile.SettingValue)).Wait();
+						client.Core.Metadata.FilesPutAsync(stream, Path.Combine(dbPath.SettingValue, dbFile.SettingValue)).Wait();
 					}
 					break;
 				}

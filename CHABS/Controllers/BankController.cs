@@ -219,7 +219,7 @@ namespace CHABS.Controllers {
 			var success = false;
 			var message = "";
 			try {
-				var loginIds = Service.Logins.GetUserLoginIds(GetCurrentUserGuid());
+				var loginIds = Service.Logins.GetHouseholdLoginIds(GetHouseholdIdForCurrentUser());
 				var options = new TransactionUpdateService.Options(BankService, Service, loginIds, GetCurrentUserGuid());
 				TransactionUpdateService.DoTransactionUpdate(options);
 				success = true;

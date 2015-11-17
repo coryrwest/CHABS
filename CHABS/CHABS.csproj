@@ -288,7 +288,9 @@
     <Content Include="Views\Home\Index.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -386,11 +388,21 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Dropbox\Settings.cshtml" />
-    <Content Include="Views\Dropbox\SettingsPartial.cshtml" />
-    <Content Include="Views\Bank\Update.cshtml" />
-    <Content Include="Views\Shared\CallbackStatus.cshtml" />
-    <Content Include="Views\Household\Index.cshtml" />
+    <Content Include="Views\Dropbox\Settings.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Dropbox\SettingsPartial.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Bank\Update.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\CallbackStatus.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Household\Index.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

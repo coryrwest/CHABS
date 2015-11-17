@@ -51,8 +51,8 @@ namespace CHABS.API.Services {
 		public BaseBankLoginService(Session session) : base(session) {
 		}
 
-		public List<Guid> GetUserLoginIds(Guid userId) {
-			return GetList(new {userid = userId}).Select(l => l.Id).ToList();
+		public List<Guid> GetHouseholdLoginIds(Guid householdId) {
+			return GetList(new { householdId }).Select(l => l.Id).ToList();
 		}
 
 		public override void Delete(Guid id) {

@@ -18,7 +18,10 @@ namespace CHABS.API.Services {
 	}
 
 	public class BaseService<T> : IDataService, IDisposable where T : DataObject {
-		protected Database db = new Database("DefaultConnection");
+		protected Database db =
+			new Database((System.Configuration.ConfigurationManager.AppSettings["Environment"] ?? "Development") == "Production"
+				? "LiveConnection"
+				: "DefaultConnection");
 		public Session Session { get; private set; }
 
 		public BaseService(Session session) {
