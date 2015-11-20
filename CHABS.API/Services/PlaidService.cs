@@ -62,14 +62,14 @@ namespace CHABS.API.Services {
 		/// <summary>
 		/// Will exchange a public token from plaid link to an access token
 		/// </summary>
-		/// <param name="publicToken"></param>
+		/// <param name="afterAuthData"></param>
 		/// <returns></returns>
-		public string ExchangePublicToken(string publicToken) {
+		public string RunAfterAuthFunction(string afterAuthData) {
 			var request = new RestRequest("exchange_token", Method.POST);
 			var body = new {
 				client_id = ConfigurationManager.AppSettings["PlaidID"],
 				secret = ConfigurationManager.AppSettings["PlaidSecret"],
-				public_token = publicToken
+				public_token = afterAuthData
 			};
 			request.AddJsonBody(body);
 			request.RequestFormat = DataFormat.Json;
@@ -78,7 +78,7 @@ namespace CHABS.API.Services {
 			if (response.StatusCode == HttpStatusCode.OK) {
 				return jresponse["access_token"].ToString();
 			} else {
-				throw new Exception(response.StatusDescription);
+				throw new Exception(response.StatusDescription, new Exception(jresponse.ToString()));
 			}
 		}
 

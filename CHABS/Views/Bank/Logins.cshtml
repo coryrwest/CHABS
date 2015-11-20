@@ -1,5 +1,6 @@
 ﻿@using System.Configuration
 @using CHABS.Models
+@using Microsoft.AspNet.Identity
 @model CHABS.Models.BankLoginViewModel
 @{
 	ViewBag.Title = "Logins";
@@ -84,6 +85,6 @@
 	data-form-id="plaid-form"
 	data-key="@ConfigurationManager.AppSettings["PlaidKey"]"
 	data-product="connect"
-	data-env="tartan">
+	data-env="@ConfigurationManager.AppSettings["PlaidEnvironment"]">
 	</script>
 }

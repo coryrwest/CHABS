@@ -72,7 +72,7 @@ namespace CHABS.API.Services {
 		/// <param name="email"></param>
 		/// <returns></returns>
 		public UserSetting SaveSetting(SettingKeys key, string value, Guid userId) {
-			return SaveSetting(key, value, userId);
+			return SaveSetting(key.ToString(), value, userId);
 		}
 
 		public UserSetting SaveSetting(string key, string value, Guid userId) {

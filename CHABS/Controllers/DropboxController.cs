@@ -75,6 +75,9 @@ namespace CHABS.Controllers {
 			return PartialView("SettingsPartial", model);
 		}
 
+		/// <summary>
+		/// Will cause an immediate redirect
+		/// </summary>
 		private RedirectResult ConnectDropBox() {
 			// Initialize a new Client (without an AccessToken)
 			var client = new Client(options);
@@ -90,19 +93,29 @@ namespace CHABS.Controllers {
 
 			var client = new Client(options);
 
-			// Exchange the Authorization Code with Access/Refresh tokens
-			var token = client.Core.OAuth2.TokenAsync(authCode).Result;
+			var model = new DropboxViewModel();
+			if (authCode != null) {
+				try {
+					// Exchange the Authorization Code with Access/Refresh tokens
+					var token = client.Core.OAuth2.TokenAsync(authCode).Result;
 
-			// Get account info
-			var accountInfo = client.Core.Accounts.AccountInfoAsync().Result;
-			var model = new DropboxViewModel() {
-				UID = accountInfo.uid.ToString(),
-				DisplayName = accountInfo.display_name,
-				Email = accountInfo.email
-			};
+					// Get account info
+					var accountInfo = client.Core.Accounts.AccountInfoAsync().Result;
+					model.UID = accountInfo.uid.ToString();
+					model.DisplayName = accountInfo.display_name;
+					model.Email = accountInfo.email;
 
-			// Save the token to user settings
-			Service.UserSettings.SaveSetting(BaseUserSettingService.SettingKeys.DropboxToken, token.access_token, GetCurrentUserGuid());
+					// Save the token to user settings
+					Service.UserSettings.SaveSetting(BaseUserSettingService.SettingKeys.DropboxToken, token.access_token,
+						GetCurrentUserGuid());
+				} catch (AggregateException ex) {
+					model.DisplayName = ex.InnerException.Message;
+				} catch (Exception ex) {
+					model.DisplayName = ex.Message;
+				}
+			} else {
+				model.DisplayName = "Dropbox was not connected.";
+			}
 
 			return model;
 		}
@@ -125,7 +138,7 @@ namespace CHABS.Controllers {
 
 				// Get the transactions
 				var logins = BankDataService.Logins.GetHouseholdLoginIds(GetHouseholdIdForCurrentUser());
-				var transactions = BankDataService.Transactions.GetLast30DaysTransactions(logins);
+				var transactions = BankDataService.Transactions.GetThisMonthsTransactions(logins);
 
 				// Get the xls file
 				var options = new Options();

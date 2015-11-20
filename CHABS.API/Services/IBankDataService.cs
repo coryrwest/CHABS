@@ -16,9 +16,9 @@ namespace CHABS.API.Services {
 		/// <summary>
 		/// Will exchange a public token from plaid link to an access token
 		/// </summary>
-		/// <param name="publicToken"></param>
+		/// <param name="afterAuthData"></param>
 		/// <returns></returns>
-		string ExchangePublicToken(string publicToken);
+		string RunAfterAuthFunction(string afterAuthData);
 
 	}
 

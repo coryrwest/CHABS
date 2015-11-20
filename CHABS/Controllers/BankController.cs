@@ -43,19 +43,13 @@ namespace CHABS.Controllers {
 
 		[HttpPost]
 		public ActionResult Logins(FormCollection form) {
-			//Service.Logins.Upsert(new BankLogin() {
-			//	Institution = model.Institution,
-			//	Name = model.Name,
-			//	UserId = GetCurrentUserGuid()
-			//});
-
-			//model.CurrentLogins =
-			//	Service.Logins.GetList(new { UserId = GetCurrentUserGuid() });
-			//return PartialView("LoginListPartial", new LoginListViewModel(model.CurrentLogins));
+			var publicToken = form["public_token"];
+			
+			// Save the token in case of failure
+			Service.Logins.SavePublicToken(publicToken);
 
 			// Exchange for accessToken
-			var publicToken = form["public_token"];
-			var accessToken = BankService.ExchangePublicToken(publicToken);
+			var accessToken = BankService.RunAfterAuthFunction(publicToken);
 
 			// Save login
 			var login = new BankLogin() {
@@ -65,6 +59,9 @@ namespace CHABS.Controllers {
 				AccessToken = accessToken
 			};
 			Service.Logins.Upsert(login);
+
+			// Delete the token after a successful translation
+			Service.Logins.DeletePublicToken(publicToken);
 
 			// Get accounts
 			var accounts = BankService.GetAccounts(login.Id, accessToken).Result;
@@ -137,11 +134,11 @@ namespace CHABS.Controllers {
 		}
 
 		public ActionResult Transactions() {
-			var logins = Service.Logins.GetList(new { householdid = GetHouseholdIdForCurrentUser() }).Select(l => l.Id).ToList();
+			var logins = Service.Logins.GetHouseholdLoginIds(GetHouseholdIdForCurrentUser());
 
 			var model = new TransactionsViewModel();
-			model.RangeString = "Last 30 days";
-			model.Transations = Service.Transactions.GetLast30DaysTransactions(logins);
+			model.RangeString = "Last 50 Transactions";
+			model.Transations = Service.Transactions.GetLast50Transactions(logins);
 			return View(model);
 		}
 
