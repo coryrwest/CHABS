@@ -15,3 +15,27 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.navbar.secondary-nav {
+    top: inherit;
+	min-height: 40px;
+}
+
+.body-content {
+	margin-top: 10px;
+}
+
+.inner-body-content {
+	margin-top: 50px;
+}
+
+.navbar.secondary-nav .navbar-nav > li > a {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+@media (min-width: 768px) {
+  .navbar.secondary-nav .navbar-nav > li > a {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}

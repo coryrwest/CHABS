@@ -1,11 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@using CHABS.Helpers
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width" />
 	<title>@ViewBag.Title</title>
 	@Styles.Render("~/Content/css")
-		@Scripts.Render("~/bundles/modernizr")
+	@Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
 	<div class="navbar navbar-inverse navbar-fixed-top">
@@ -21,11 +22,15 @@
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
 					@if (User.Identity.IsAuthenticated) {
-						<li>@Html.ActionLink("Transactions", "Transactions", "Bank")</li>
-						<li>@Html.ActionLink("Bank Setup", "Logins", "Bank")</li>
-						<li>@Html.ActionLink("Categories", "Categories", "Bank")</li>
-						<li>@Html.ActionLink("Settings", "ProfileSettings", "Account")</li>
-						<li>@Html.ActionLink("Update Spreadsheet", "Update", "Bank")</li>
+						<li class="@Html.IsSelected("Bank", "Transactions,Categories,Logins,CategoryMatches", "active")">
+							@Html.ActionLink("Banking", "TransactionList", "Bank")
+						</li>
+						<li class="@Html.IsSelected("Account,Dropbox,Household", "ProfileSettings,Settings,Index,Authorize", "active")">
+							@Html.ActionLink("Settings", "ProfileSettings", "Account")
+						</li>
+						<li class="@Html.IsSelected("Bank", "Update", "active")">
+							@Html.ActionLink("Update Spreadsheet", "Update", "Bank")
+						</li>
 					}
 				</ul>
 				@Html.Partial("_LoginPartial")
@@ -33,7 +38,10 @@
 		</div>
 	</div>
 	<div class="container body-content">
-		@RenderBody()
+		@RenderSection("SecondaryNav", false)
+		<div class="inner-body-content">
+			@RenderBody()
+		</div>
 		<hr />
 		<footer>
 			<p>CHABS &copy; @DateTime.Now.Year</p>

@@ -1,5 +1,9 @@
 ﻿@model CHABS.Models.AccountListViewModel
 
+@section SecondaryNav {
+	@Html.Partial("_BankNavPartial")
+}
+
 <h3>Accounts for @Model.LoginName</h3>
 <div class="col-md-12">
 	<table class="table table-striped">

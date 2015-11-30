@@ -1,6 +1,10 @@
 ﻿@using CHABS.Models
 @model CHABS.Models.CategoryMatchesViewModel
 
+@section SecondaryNav {
+	@Html.Partial("_BankNavPartial")
+}
+
 <h3>Matching for @Model.CategoryName</h3>
 <div class="col-md-12">
 	<div class="col-md-6">

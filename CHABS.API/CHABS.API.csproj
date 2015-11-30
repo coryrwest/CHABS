@@ -77,6 +77,8 @@
     <Compile Include="ExcelHelpers\Navigation.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Objects\BankLoginAccount.cs" />
+    <Compile Include="Objects\Budget.cs" />
+    <Compile Include="Objects\BudgetCategoryMap.cs" />
     <Compile Include="Objects\CategoryMatch.cs" />
     <Compile Include="Objects\DataObject.cs" />
     <Compile Include="Objects\BankLogin.cs" />

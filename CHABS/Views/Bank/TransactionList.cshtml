@@ -1,43 +1,43 @@
 ﻿@using CHABS.Models
 @model CHABS.Models.TransactionsViewModel
-@{
-	ViewBag.Title = "Transactions";
+
+@section SecondaryNav {
+	@Html.Partial("_BankNavPartial")
 }
 
-
-<h2>@ViewBag.Title for @Model.RangeString</h2>
+<h2>@Model.RangeString</h2>
 <div class="row">
 	<div class="col-md-12">
 		<table class="table table-striped" id="transactions">
-		<tbody>
-			<tr>
-				<th>Date</th>
-				<th>Amount</th>
-				<th>Description</th>
-				<th>Source</th>
-				<th>Category</th>
-			</tr>
-			@foreach (var transaction in Model.Transations) {
+			<tbody>
 				<tr>
-					<td>@transaction.Date.ToShortDateString()</td>
-					<td>@string.Format("{0:C}", transaction.Amount)</td>
-					<td>@transaction.Description</td>
-					<td>@transaction.Source</td>
-					<td>@transaction.Category</td>
+					<th>Date</th>
+					<th>Amount</th>
+					<th>Description</th>
+					<th>Source</th>
+					<th>Category</th>
 				</tr>
-			}
-		<tbody>
-	</table>
+				@foreach (var transaction in Model.Transations) {
+					<tr>
+						<td>@transaction.Date.ToShortDateString()</td>
+						<td>@string.Format("{0:C}", transaction.Amount)</td>
+						<td>@transaction.Description</td>
+						<td>@transaction.Source</td>
+						<td>@transaction.Category</td>
+					</tr>
+				}
+			<tbody>
+		</table>
 	</div>
 </div>
 
 @section Scripts {
 	@*@Scripts.Render("~/bundles/react-container")
-	@Scripts.Render("~/bundles/react-app")*@
+		@Scripts.Render("~/bundles/react-app")*@
 	@Scripts.Render("~/bundles/table")
 
 	<script>
-		$(document).ready(function() {
+		$(document).ready(function () {
 			var editor = new $.fn.dataTable.Editor({
 				ajax: '/api/staff',
 				table: '#transactions',

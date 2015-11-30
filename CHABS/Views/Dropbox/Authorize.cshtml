@@ -4,6 +4,10 @@
 	ViewBag.Title = "Authorize";
 }
 
+@section SecondaryNav {
+	@Html.Partial("_SettingsNavPartial")
+}
+
 @if (Model.AlreadyConnected) {
 	<h2>Dropbox has already been connected.</h2>
 } else {

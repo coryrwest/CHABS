@@ -42,6 +42,13 @@ namespace CHABS.API.Services {
 		/// <param name="isInserting"></param>
 		/// <param name="daObj"></param>
 		protected virtual void AfterSave(bool isInserting, DataObject daObj) { }
+		/// <summary>
+		/// Will run before the service insert save.
+		/// daObj will be the DataObject that is saving.
+		/// </summary>
+		/// <param name="isInserting"></param>
+		/// <param name="daObj"></param>
+		protected virtual void BeforeInsert(DataObject daObj) { }
 
 		public T Upsert(T dataObject) {
 			// Get new flag for the isInserting of the save events
@@ -69,6 +76,14 @@ namespace CHABS.API.Services {
 			Delete(item);
 		}
 
+		public virtual void Restore(Guid id) {
+			T item = GetById(id, true);
+			if (!PermissionsService.CheckObjectPermissions(item, Session)) {
+				throw new PermissionsException();
+			}
+			Restore(item);
+		}
+
 		#region DB Interaction
 		public void Delete(T dataObject) {
 			if (!PermissionsService.CheckObjectPermissions(dataObject, Session)) {
@@ -83,11 +98,22 @@ namespace CHABS.API.Services {
 			}
 		}
 
-		public T GetById(Guid id) {
+		public void Restore(T dataObject) {
+			if (!PermissionsService.CheckObjectPermissions(dataObject, Session)) {
+				throw new PermissionsException();
+			}
+
+			if (dataObject.Perpetual) {
+				dataObject.Deleted = false;
+				Update(dataObject);
+			}
+		}
+
+		public T GetById(Guid id, bool includeDeleted = false) {
 			if (id == Guid.Empty) { return null; }
 
 			T item = db.GetById<T>(id);
-			if (item.Deleted) {
+			if (item.Deleted && !includeDeleted) {
 				return null;
 			}
 			if (!PermissionsService.CheckObjectPermissions(item, Session)) {
@@ -96,30 +122,37 @@ namespace CHABS.API.Services {
 			return item;
 		}
 
-		public List<T> GetList(object whereClause) {
+		public List<T> GetList(object whereClause, bool includeDeleted = false) {
 			// Add requires params
 			var poco = Activator.CreateInstance<T>();
-			if (poco.Perpetual) {
+			if (poco.Perpetual && !includeDeleted) {
 				dynamic where = whereClause.ToDynamic();
 				where.deleted = false;
 				whereClause = where;
 			}
-			return db.GetList<T>(whereClause);
+			var items = db.GetList<T>(whereClause);
+
+			// Sort perpetual items with deleted at the bottom
+			if (poco.Perpetual) {
+				items = items.OrderBy(i => i.Deleted).ToList();
+			}
+
+			return items;
 		}
 
-		public List<T> GetList(string whereClause) {
+		public List<T> GetList(string whereClause, bool includeDeleted = false) {
 			var poco = Activator.CreateInstance<T>();
-			if (poco.Perpetual) {
+			if (poco.Perpetual && !includeDeleted) {
 				whereClause = whereClause.InsertBefore(" and deleted = false ", new[] { "order by", "group by" });
 			}
 			var results =  db.GetList<T>(whereClause);
 			return results;
 		}
 
-		public T GetSingle(object whereClause) {
+		public T GetSingle(object whereClause, bool ignorePerpetual = false) {
 			// Add requires params
 			var poco = Activator.CreateInstance<T>();
-			if (poco.Perpetual) {
+			if (poco.Perpetual && !ignorePerpetual) {
 				dynamic where = whereClause.ToDynamic();
 				where.deleted = false;
 				whereClause = where;
@@ -142,6 +175,7 @@ namespace CHABS.API.Services {
 			if (!PermissionsService.CheckObjectPermissions(dataObject, Session)) {
 				throw new PermissionsException();
 			}
+			BeforeInsert(dataObject);
 			db.Insert(dataObject);
 			dataObject.IsNew = false;
 			return dataObject;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Policy;
 using CHABS.API.Objects;
@@ -38,9 +39,9 @@ namespace CHABS.API.Services {
 		public BaseCategoryService(Session session) : base(session) {
 		}
 
-		public List<Category> GetAll() {
+		public List<Category> GetAll(bool includeDeleted = false) {
 			var where = string.Format("where householdid = '{0}' order by sort", Session.Household.Id);
-			return GetList(where);
+			return GetList(where, includeDeleted);
 		}
 
 		public Category FindCategoryMatch(string transactionDescription) {
@@ -54,6 +55,19 @@ namespace CHABS.API.Services {
 				}
 			}
 			return GetById(categoryId);
+		}
+
+		protected override void BeforeInsert(DataObject daObj) {
+			// Check for existing objects that may match and error appropraitely.
+			var category = daObj as Category;
+			if (category != null) {
+				var name = category.Name;
+				var existingItem = GetSingle(new { name }, true);
+				if (existingItem != null) {
+					throw new Exception("A category by that name already exists. It was deleted. Please restore the deleted category instead of making a new one.");
+				}
+			}
+			base.BeforeInsert(daObj);
 		}
 	}
 
@@ -103,6 +117,10 @@ namespace CHABS.API.Services {
 
 		public List<BankLoginAccountTransaction> GetLast50Transactions(List<Guid> loginIds) {
 			var serviceIdsPart = GetFormattedServiceIds(loginIds);
+
+			if (serviceIdsPart.IsNull()) {
+				return new List<BankLoginAccountTransaction>();
+			}
 
 			var query = string.Format("where serviceaccountid in ({0}) order by date desc limit 50", serviceIdsPart);
 			var transactions = GetList(query);

@@ -133,7 +133,7 @@ namespace CHABS.Controllers {
 			//TransactionUpdate(loginId.ToGuid());
 		}
 
-		public ActionResult Transactions() {
+		public ActionResult TransactionList() {
 			var logins = Service.Logins.GetHouseholdLoginIds(GetHouseholdIdForCurrentUser());
 
 			var model = new TransactionsViewModel();
@@ -146,7 +146,7 @@ namespace CHABS.Controllers {
 		public ActionResult Categories() {
 			var model = new CategoriesViewModel();
 			model.CurrentCategories =
-				Service.Categories.GetAll().OrderBy(c => c.Sort).ToList();
+				Service.Categories.GetAll(true).OrderBy(c => c.Sort).OrderBy(c => c.Deleted).ToList();
 
 			return View(model);
 		}
@@ -160,7 +160,7 @@ namespace CHABS.Controllers {
 			});
 
 			model.CurrentCategories =
-				Service.Categories.GetList(new { HouseholdId = GetHouseholdIdForCurrentUser() });
+				Service.Categories.GetList(new { HouseholdId = GetHouseholdIdForCurrentUser() }, true);
 			return PartialView("CategoryListPartial", new CategoriesListViewModel(model.CurrentCategories));
 		}
 
@@ -175,6 +175,11 @@ namespace CHABS.Controllers {
 
 		public ActionResult DeleteCategory(Guid id) {
 			Service.Categories.Delete(id);
+			return RedirectToAction("Categories");
+		}
+
+		public ActionResult RestoreCategory(Guid id) {
+			Service.Categories.Restore(id);
 			return RedirectToAction("Categories");
 		}
 

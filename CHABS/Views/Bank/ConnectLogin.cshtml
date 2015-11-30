@@ -4,6 +4,10 @@
 	ViewBag.Title = "Connect with ";
 }
 
+@section SecondaryNav {
+	@Html.Partial("_BankNavPartial")
+}
+
 <h2>@ViewBag.Title @Model.Login.Name</h2>
 <div class="row">
 	<div class="col-md-6">

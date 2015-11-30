@@ -199,6 +199,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\HtmlHelpers.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AppRole.cs" />
@@ -374,7 +375,7 @@
     <Content Include="Views\Bank\ConnectLogin.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\Bank\Transactions.cshtml">
+    <Content Include="Views\Bank\TransactionList.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Dropbox\Authorize.cshtml">
@@ -403,6 +404,8 @@
     <Content Include="Views\Household\Index.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\Shared\_BankNavPartial.cshtml" />
+    <Content Include="Views\Shared\_SettingsNavPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
