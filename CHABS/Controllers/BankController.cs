@@ -98,7 +98,10 @@ namespace CHABS.Controllers {
 		}
 
 		public ActionResult DeleteLogin(Guid loginId) {
-			Service.Logins.Delete(loginId);
+			var login = Service.Logins.GetById(loginId);
+			Service.Logins.DeleteObject(login);
+			// Delete the BankDataService user
+			var response = BankService.DeleteUser(login.AccessToken);
 
 			var current = Service.Logins.GetAllForHousehold();
 

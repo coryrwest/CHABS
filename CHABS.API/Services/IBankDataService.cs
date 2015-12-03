@@ -20,6 +20,8 @@ namespace CHABS.API.Services {
 		/// <returns></returns>
 		string RunAfterAuthFunction(string afterAuthData);
 
+
+		string DeleteUser(string token);
 	}
 
 	public class BankDataServiceOptions {

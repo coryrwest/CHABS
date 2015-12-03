@@ -159,12 +159,12 @@ namespace CHABS.API.Services {
 			return response.Content;
 		}
 
-		public string DeleteUser(string accessToken) {
+		public string DeleteUser(string token) {
 			var request = new RestRequest("connect", Method.DELETE);
 			var body = new {
 				client_id = ConfigurationManager.AppSettings["PlaidID"],
 				secret = ConfigurationManager.AppSettings["PlaidSecret"],
-				access_token = accessToken
+				access_token = token
 			};
 			request.AddJsonBody(body);
 			request.RequestFormat = DataFormat.Json;

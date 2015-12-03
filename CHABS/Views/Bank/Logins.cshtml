@@ -37,17 +37,17 @@
 						</div>
 					</div>
 					@*<div class="form-group">
-						@Html.LabelFor(m => m.Institution, new { @class = "col-md-3 control-label" })
-						<div class="col-md-9">
-							@Html.DropDownListFor(m => m.Institution, Model.InstitutionList, new { @class = "form-control" })
-							@Html.ValidationMessageFor(m => m.Institution, "", new { @class = "text-danger" })
-						</div>
-					</div>*@
+							@Html.LabelFor(m => m.Institution, new { @class = "col-md-3 control-label" })
+							<div class="col-md-9">
+								@Html.DropDownListFor(m => m.Institution, Model.InstitutionList, new { @class = "form-control" })
+								@Html.ValidationMessageFor(m => m.Institution, "", new { @class = "text-danger" })
+							</div>
+						</div>*@
 					@*<div class="form-group">
-						<div class="col-sm-offset-2 col-sm-10">
-							<button type="submit" class="btn btn-default">Add Login</button>
-						</div>
-					</div>*@
+							<div class="col-sm-offset-2 col-sm-10">
+								<button type="submit" class="btn btn-default">Add Login</button>
+							</div>
+						</div>*@
 				</form>
 			}
 		</div>
@@ -67,7 +67,8 @@
 		}
 
 		$(document).ready(function () {
-
+			$('#plaid-link-button').addClass('btn');
+			$('#plaid-link-button').addClass('btn-default');
 		});
 
 		function deleteClick() {
@@ -83,12 +84,11 @@
 		$(document).on('click', '.delete-account', deleteClick);
 	</script>
 
-	<script
-	src="https://cdn.plaid.com/link/stable/link-initialize.js"
-	data-client-name="CHABS"
-	data-form-id="plaid-form"
-	data-key="@ConfigurationManager.AppSettings["PlaidKey"]"
-	data-product="connect"
-	data-env="@ConfigurationManager.AppSettings["PlaidEnvironment"]">
+	<script src="https://cdn.plaid.com/link/stable/link-initialize.js"
+			data-client-name="CHABS"
+			data-form-id="plaid-form"
+			data-key="@ConfigurationManager.AppSettings["PlaidKey"]"
+			data-product="connect"
+			data-env="@ConfigurationManager.AppSettings["PlaidEnvironment"]">
 	</script>
 }
