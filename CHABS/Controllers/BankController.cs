@@ -35,7 +35,7 @@ namespace CHABS.Controllers {
 
 			var model = new BankLoginViewModel();
 			model.CurrentLogins =
-				Service.Logins.GetList(new { HouseholdId = GetHouseholdIdForCurrentUser() });
+				Service.Logins.GetAllForHousehold();
 			model.InstitutionList = new SelectList(institutions.Pairs, "Key", "Value");
 
 			return View(model);
@@ -102,7 +102,7 @@ namespace CHABS.Controllers {
 		public ActionResult DeleteLogin(Guid loginId) {
 			Service.Logins.Delete(loginId);
 
-			var current = Service.Logins.GetList(new { HouseholdId = GetHouseholdIdForCurrentUser() });
+			var current = Service.Logins.GetAllForHousehold();
 
 			return PartialView("LoginListPartial", new LoginListViewModel(current));
 		}
@@ -146,7 +146,7 @@ namespace CHABS.Controllers {
 		public ActionResult Categories() {
 			var model = new CategoriesViewModel();
 			model.CurrentCategories =
-				Service.Categories.GetAll(true).OrderBy(c => c.Sort).OrderBy(c => c.Deleted).ToList();
+				Service.Categories.GetAll(true).ToList();
 
 			return View(model);
 		}
@@ -160,7 +160,7 @@ namespace CHABS.Controllers {
 			});
 
 			model.CurrentCategories =
-				Service.Categories.GetList(new { HouseholdId = GetHouseholdIdForCurrentUser() }, true);
+				Service.Categories.GetAll(true);
 			return PartialView("CategoryListPartial", new CategoriesListViewModel(model.CurrentCategories));
 		}
 
@@ -208,6 +208,42 @@ namespace CHABS.Controllers {
 		public ActionResult DeleteCategoryMatch(Guid id, Guid categoryId) {
 			Service.CategoryMatches.Delete(id);
 			return RedirectToAction("CategoryMatches", new { id = categoryId });
+		}
+		#endregion
+
+		#region Budgets
+		public ActionResult Budgets() {
+			var budgets = Service.Budgets.GetAllForHousehold(true);
+			var categories = Service.Categories.GetAllForHousehold(true);
+			var model = new BudgetViewModel();
+			model.CurrentBudgets = budgets;
+			model.Categories = new SelectList(categories, "Name", "Name");
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult Budgets(BudgetViewModel model) {
+			Service.Budgets.Upsert(new Budget() {
+				Name = model.Name,
+				Amount = model.Amount,
+				HouseholdId = GetHouseholdIdForCurrentUser()
+			});
+
+			model.CurrentBudgets =
+				Service.Budgets.GetAllForHousehold(true);
+			var categories = Service.Categories.GetAllForHousehold(true);
+			model.Categories = new SelectList(categories, "Name", "Name");
+			return PartialView("BudgetListPartial", new BudgetListViewModel(model.CurrentBudgets));
+		}
+
+		public ActionResult DeleteBudget(Guid id) {
+			Service.Budgets.Delete(id);
+			return RedirectToAction("Budgets");
+		}
+
+		public ActionResult RestoreBudget(Guid id) {
+			Service.Budgets.Restore(id);
+			return RedirectToAction("Budgets");
 		}
 		#endregion
 

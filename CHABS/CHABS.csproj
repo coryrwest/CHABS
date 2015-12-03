@@ -406,6 +406,12 @@
     </Content>
     <Content Include="Views\Shared\_BankNavPartial.cshtml" />
     <Content Include="Views\Shared\_SettingsNavPartial.cshtml" />
+    <Content Include="Views\Bank\Budgets.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Bank\BudgetListPartial.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

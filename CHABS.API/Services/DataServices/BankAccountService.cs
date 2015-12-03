@@ -12,7 +12,8 @@ namespace CHABS.API.Services {
 		public BaseBankLoginAccountTransactionService Transactions;
 		public BaseBankLoginAccountService Accounts;
 		public BaseCategoryService Categories;
-		public BaseService<CategoryMatch> CategoryMatches; 
+		public BaseService<CategoryMatch> CategoryMatches;
+		public BaseService<Budget> Budgets; 
 		private static Session Session { get; set; }
 
 		public BankAccountService(Session session) {
@@ -22,6 +23,7 @@ namespace CHABS.API.Services {
 			Accounts = new BaseBankLoginAccountService(Session);
 			Categories = new BaseCategoryService(Session);
 			CategoryMatches = new BaseService<CategoryMatch>(Session);
+			Budgets = new BaseService<Budget>(Session);
 		}
 	}
 
@@ -40,7 +42,7 @@ namespace CHABS.API.Services {
 		}
 
 		public List<Category> GetAll(bool includeDeleted = false) {
-			var where = string.Format("where householdid = '{0}' order by sort", Session.Household.Id);
+			var where = string.Format("where householdid = '{0}' order by sort, deleted", Session.Household.Id);
 			return GetList(where, includeDeleted);
 		}
 

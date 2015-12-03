@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Web;
@@ -36,7 +37,9 @@ namespace CHABS.Models {
 	}
 
 	public class TransactionsViewModel {
+		[DataType(DataType.Date)]
 		public DateTime StartDate { get; set; }
+		[DataType(DataType.Date)]
 		public DateTime EndDate { get; set; }
 
 		/// <summary>
@@ -77,5 +80,22 @@ namespace CHABS.Models {
 		}
 
 		public List<CategoryMatch> CurrentCategoryMatches { get; set; }
+	}
+
+	public class BudgetViewModel {
+		public string Name { get; set; }
+		[DataType(DataType.Currency)]
+		public decimal Amount { get; set; }
+
+		public List<Budget> CurrentBudgets { get; set; }
+		public SelectList Categories{ get; set; }
+	}
+
+	public class BudgetListViewModel {
+		public BudgetListViewModel(List<Budget> currentBudgets) {
+			CurrentBudgets = currentBudgets;
+		}
+
+		public List<Budget> CurrentBudgets { get; set; }
 	}
 }

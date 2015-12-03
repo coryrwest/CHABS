@@ -84,6 +84,13 @@ namespace CHABS.API.Services {
 			Restore(item);
 		}
 
+		public virtual List<T> GetAllForHousehold(bool includeDeleted = false) {
+			var items = GetList(new {householdid = Session.Household.Id}, includeDeleted).ToList();
+			return items;
+		} 
+
+
+
 		#region DB Interaction
 		public void Delete(T dataObject) {
 			if (!PermissionsService.CheckObjectPermissions(dataObject, Session)) {
