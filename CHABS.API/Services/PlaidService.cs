@@ -158,5 +158,22 @@ namespace CHABS.API.Services {
 			}
 			return response.Content;
 		}
+
+		public string DeleteUser(string accessToken) {
+			var request = new RestRequest("connect", Method.DELETE);
+			var body = new {
+				client_id = ConfigurationManager.AppSettings["PlaidID"],
+				secret = ConfigurationManager.AppSettings["PlaidSecret"],
+				access_token = accessToken
+			};
+			request.AddJsonBody(body);
+			request.RequestFormat = DataFormat.Json;
+			var response = Client.Execute(request);
+
+			if (response.StatusCode != HttpStatusCode.OK) {
+				throw new Exception(response.StatusDescription);
+			}
+			return response.Content;
+		}
 	}
 }

@@ -22,7 +22,7 @@
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
 					@if (User.Identity.IsAuthenticated) {
-						<li class="@Html.IsSelected("Bank", "TransactionList,Categories,Logins,CategoryMatches,Budgets", "active")">
+						<li class="@Html.IsSelected("Bank,Budgets", "", "active")">
 							@Html.ActionLink("Banking", "TransactionList", "Bank")
 						</li>
 						<li class="@Html.IsSelected("Account,Dropbox,Household", "ProfileSettings,Settings,Index,Authorize", "active")">

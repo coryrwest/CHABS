@@ -20,13 +20,11 @@ using Newtonsoft.Json.Linq;
 namespace CHABS.Controllers {
 	public class BankController : BaseController {
 		private readonly BankAccountService Service;
-		private readonly UserRoleService UserService;
 		private readonly IBankDataService BankService;
 
 		public BankController() {
 			Service = new BankAccountService(AppSession);
 			BankService = new PlaidService();
-			UserService = new UserRoleService(AppSession);
 		}
 
 		#region Logins
@@ -164,6 +162,18 @@ namespace CHABS.Controllers {
 			return PartialView("CategoryListPartial", new CategoriesListViewModel(model.CurrentCategories));
 		}
 
+		public ActionResult EditCategory(Guid id) {
+			var category = Service.Categories.GetById(id);
+			return View(category);
+		}
+
+		[HttpPost]
+		public ActionResult EditCategory(Category category) {
+			category.IsNew = false;
+			Service.Categories.Upsert(category);
+			return RedirectToAction("Categories");
+		}
+
 		public ActionResult ToggleCategory(Guid id) {
 			// Toggle the account
 			var category = Service.Categories.GetById(id);
@@ -208,42 +218,6 @@ namespace CHABS.Controllers {
 		public ActionResult DeleteCategoryMatch(Guid id, Guid categoryId) {
 			Service.CategoryMatches.Delete(id);
 			return RedirectToAction("CategoryMatches", new { id = categoryId });
-		}
-		#endregion
-
-		#region Budgets
-		public ActionResult Budgets() {
-			var budgets = Service.Budgets.GetAllForHousehold(true);
-			var categories = Service.Categories.GetAllForHousehold(true);
-			var model = new BudgetViewModel();
-			model.CurrentBudgets = budgets;
-			model.Categories = new SelectList(categories, "Name", "Name");
-			return View(model);
-		}
-
-		[HttpPost]
-		public ActionResult Budgets(BudgetViewModel model) {
-			Service.Budgets.Upsert(new Budget() {
-				Name = model.Name,
-				Amount = model.Amount,
-				HouseholdId = GetHouseholdIdForCurrentUser()
-			});
-
-			model.CurrentBudgets =
-				Service.Budgets.GetAllForHousehold(true);
-			var categories = Service.Categories.GetAllForHousehold(true);
-			model.Categories = new SelectList(categories, "Name", "Name");
-			return PartialView("BudgetListPartial", new BudgetListViewModel(model.CurrentBudgets));
-		}
-
-		public ActionResult DeleteBudget(Guid id) {
-			Service.Budgets.Delete(id);
-			return RedirectToAction("Budgets");
-		}
-
-		public ActionResult RestoreBudget(Guid id) {
-			Service.Budgets.Restore(id);
-			return RedirectToAction("Budgets");
 		}
 		#endregion
 

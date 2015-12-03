@@ -18,9 +18,12 @@ namespace CHABS.API.Objects {
 			Created = DateTime.Now;
 		}
 
+		#region Make Perpetual
 		[Editable(false)]
 		public override bool Perpetual {
 			get { return true; }
 		}
+		public override bool Deleted { get; set; }
+		#endregion
 	}
 }

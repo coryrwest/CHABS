@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Policy;
 using CHABS.API.Objects;
 using CRWestropp.Utilities.Extensions;
+using NpgsqlTypes;
 
 namespace CHABS.API.Services {
 	public class BankAccountService {
@@ -13,7 +14,8 @@ namespace CHABS.API.Services {
 		public BaseBankLoginAccountService Accounts;
 		public BaseCategoryService Categories;
 		public BaseService<CategoryMatch> CategoryMatches;
-		public BaseService<Budget> Budgets; 
+		public BaseBudgetService Budgets;
+		public BaseService<BudgetCategoryMap> BudgetCategoryMaps; 
 		private static Session Session { get; set; }
 
 		public BankAccountService(Session session) {
@@ -23,7 +25,22 @@ namespace CHABS.API.Services {
 			Accounts = new BaseBankLoginAccountService(Session);
 			Categories = new BaseCategoryService(Session);
 			CategoryMatches = new BaseService<CategoryMatch>(Session);
-			Budgets = new BaseService<Budget>(Session);
+			Budgets = new BaseBudgetService(Session);
+			BudgetCategoryMaps = new BaseService<BudgetCategoryMap>(Session);
+		}
+	}
+
+	public class BaseBudgetService : BaseService<Budget> {
+		public BaseBudgetService(Session session) : base(session) {
+		}
+
+		public override void Delete(Guid id) {
+			throw new NotSupportedException();
+		}
+
+		public override void DeleteObject(Budget budget) {
+			budget.Disabled = DateTime.Now;
+			base.DeleteObject(budget);
 		}
 	}
 

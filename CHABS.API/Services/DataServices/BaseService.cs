@@ -76,8 +76,22 @@ namespace CHABS.API.Services {
 			Delete(item);
 		}
 
+		public virtual void DeleteObject(T item) {
+			if (!PermissionsService.CheckObjectPermissions(item, Session)) {
+				throw new PermissionsException();
+			}
+			Delete(item);
+		}
+
 		public virtual void Restore(Guid id) {
 			T item = GetById(id, true);
+			if (!PermissionsService.CheckObjectPermissions(item, Session)) {
+				throw new PermissionsException();
+			}
+			Restore(item);
+		}
+
+		public virtual void RestoreObject(T item) {
 			if (!PermissionsService.CheckObjectPermissions(item, Session)) {
 				throw new PermissionsException();
 			}

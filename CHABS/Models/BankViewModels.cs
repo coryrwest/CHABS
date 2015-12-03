@@ -86,6 +86,7 @@ namespace CHABS.Models {
 		public string Name { get; set; }
 		[DataType(DataType.Currency)]
 		public decimal Amount { get; set; }
+		public Guid CategoryId { get; set; }
 
 		public List<Budget> CurrentBudgets { get; set; }
 		public SelectList Categories{ get; set; }

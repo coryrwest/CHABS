@@ -192,6 +192,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BankController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\BudgetsController.cs" />
     <Compile Include="Controllers\DropboxController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HouseholdController.cs" />
@@ -406,12 +407,14 @@
     </Content>
     <Content Include="Views\Shared\_BankNavPartial.cshtml" />
     <Content Include="Views\Shared\_SettingsNavPartial.cshtml" />
-    <Content Include="Views\Bank\Budgets.cshtml">
+    <Content Include="Views\Budgets\Index.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\Bank\BudgetListPartial.cshtml">
+    <Content Include="Views\Budgets\BudgetListPartial.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\Budgets\EditBudget.cshtml" />
+    <None Include="Views\Bank\EditCategory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
