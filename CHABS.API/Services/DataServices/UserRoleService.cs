@@ -9,6 +9,7 @@ namespace CHABS.API.Services {
 		public BaseService<UserLogin> UserLogins;
 		public BaseUserSettingService UserSettings;
 		public BaseService<UserClaim> UserClaims;
+		public BaseService<InvitedUser> InvitedUsers;
 		private Session Session { get; set; }
 
 		public UserRoleService(Session session) {
@@ -18,6 +19,7 @@ namespace CHABS.API.Services {
 			UserLogins = new BaseService<UserLogin>(Session);
 			UserSettings = new BaseUserSettingService(Session);
 			UserClaims = new BaseService<UserClaim>(Session);
+			InvitedUsers = new BaseService<InvitedUser>(Session);
 		}
 	}
 

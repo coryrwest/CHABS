@@ -415,6 +415,12 @@
     </Content>
     <Content Include="Views\Budgets\EditBudget.cshtml" />
     <None Include="Views\Bank\EditCategory.cshtml" />
+    <Content Include="Views\Budgets\BudgetCategoryListPartial.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Budgets\Categories.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

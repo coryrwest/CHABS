@@ -9,6 +9,7 @@
 					<th>Amount</th>
 					<th></th>
 					<th></th>
+					<th></th>
 				</tr>
 				@foreach (var budget in Model.CurrentBudgets) {
 					<tr>
@@ -20,6 +21,9 @@
 							} else {
 								<a class="btn btn-xs btn-warning" href="@Url.Action("DeleteBudget", new { id = budget.Id })">Delete</a>
 							}
+						</td>
+						<td>
+							<a class="btn btn-xs btn-default" href="@Url.Action("Categories", new { id = budget.Id })">Categories</a>
 						</td>
 						<td>
 							<a class="btn btn-xs btn-info" href="@Url.Action("EditBudget", new { id = budget.Id })">Edit</a>

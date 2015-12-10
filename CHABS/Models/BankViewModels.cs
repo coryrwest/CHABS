@@ -89,7 +89,7 @@ namespace CHABS.Models {
 		public Guid CategoryId { get; set; }
 
 		public List<Budget> CurrentBudgets { get; set; }
-		public SelectList Categories{ get; set; }
+		public SelectList Categories { get; set; }
 	}
 
 	public class BudgetListViewModel {
@@ -98,5 +98,20 @@ namespace CHABS.Models {
 		}
 
 		public List<Budget> CurrentBudgets { get; set; }
+	}
+
+	public class BudgetCategoryViewModel {
+		public Guid BudgetId { get; set; }
+		public Guid CategoryId { get; set; }
+		public List<Category> CurrentBudgetCategorys { get; set; }
+		public SelectList Categories { get; set; }
+	}
+
+	public class BudgetCategoryListViewModel {
+		public BudgetCategoryListViewModel(List<Category> currentBudgetCategorys) {
+			CurrentBudgetCategorys = currentBudgetCategorys;
+		}
+
+		public List<Category> CurrentBudgetCategorys { get; set; }
 	}
 }

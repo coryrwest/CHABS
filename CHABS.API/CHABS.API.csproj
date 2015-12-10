@@ -84,6 +84,7 @@
     <Compile Include="Objects\BankLogin.cs" />
     <Compile Include="Objects\Category.cs" />
     <Compile Include="Objects\Household.cs" />
+    <Compile Include="Objects\InvitedUser.cs" />
     <Compile Include="Objects\Session.cs" />
     <Compile Include="Objects\UserClaim.cs" />
     <Compile Include="Objects\UserSetting.cs" />

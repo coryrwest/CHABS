@@ -62,5 +62,34 @@ namespace CHABS.Controllers {
 			Service.Budgets.Restore(id);
 			return RedirectToAction("Index");
 		}
+
+		#region Budget Categories
+		public ActionResult Categories(Guid id) {
+			var categories = Service.Categories.GetAllForBudget(id);
+			var allCategories = Service.Categories.GetAllForHousehold();
+			var model = new BudgetCategoryViewModel();
+			model.CurrentBudgetCategorys = categories;
+			model.BudgetId = id;
+			model.Categories = new SelectList(allCategories, "Id", "Name");
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult Categories(BudgetCategoryViewModel model) {
+			var map = new BudgetCategoryMap();
+			map.BudgetId = model.BudgetId;
+			map.CategoryId = model.CategoryId;
+			Service.BudgetCategoryMaps.Upsert(map);
+
+			var categories = Service.Categories.GetAllForBudget(model.BudgetId);
+			return PartialView("BudgetCategoryListPartial", new BudgetCategoryListViewModel(categories));
+		}
+
+		public ActionResult RemoveCategory(Guid id, Guid budgetId) {
+			var budgetCategory = Service.BudgetCategoryMaps.GetSingle(new {categoryid = id, budgetid = budgetId});
+			Service.BudgetCategoryMaps.DeleteObject(budgetCategory);
+			return RedirectToAction("Index");
+		}
+		#endregion
 	}
 }

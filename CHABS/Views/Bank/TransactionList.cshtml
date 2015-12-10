@@ -8,26 +8,30 @@
 <h2>@Model.RangeString</h2>
 <div class="row">
 	<div class="col-md-12">
-		<table class="table table-striped" id="transactions">
-			<tbody>
-				<tr>
-					<th>Date</th>
-					<th>Amount</th>
-					<th>Description</th>
-					<th>Source</th>
-					<th>Category</th>
-				</tr>
-				@foreach (var transaction in Model.Transations) {
+		@if (Model.Transations == null || Model.Transations.Count == 0) {
+			<div class="alert alert-info">You have no transactions</div>
+		} else {
+			<table class="table table-striped" id="transactions">
+				<tbody>
 					<tr>
-						<td>@transaction.Date.ToShortDateString()</td>
-						<td>@string.Format("{0:C}", transaction.Amount)</td>
-						<td>@transaction.Description</td>
-						<td>@transaction.Source</td>
-						<td>@transaction.Category</td>
+						<th>Date</th>
+						<th>Amount</th>
+						<th>Description</th>
+						<th>Source</th>
+						<th>Category</th>
 					</tr>
-				}
-			<tbody>
-		</table>
+					@foreach (var transaction in Model.Transations) {
+						<tr>
+							<td>@transaction.Date.ToShortDateString()</td>
+							<td>@string.Format("{0:C}", transaction.Amount)</td>
+							<td>@transaction.Description</td>
+							<td>@transaction.Source</td>
+							<td>@transaction.Category</td>
+						</tr>
+					}
+				<tbody>
+			</table>
+		}
 	</div>
 </div>
 

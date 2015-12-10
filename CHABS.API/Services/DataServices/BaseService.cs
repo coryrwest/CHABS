@@ -170,6 +170,12 @@ namespace CHABS.API.Services {
 			return results;
 		}
 
+		/// <summary>
+		/// Will return nul on no results
+		/// </summary>
+		/// <param name="whereClause"></param>
+		/// <param name="ignorePerpetual"></param>
+		/// <returns></returns>
 		public T GetSingle(object whereClause, bool ignorePerpetual = false) {
 			// Add requires params
 			var poco = Activator.CreateInstance<T>();

@@ -1,0 +1,23 @@
+﻿@model CHABS.Models.BudgetCategoryListViewModel
+
+<div class="col-md-12">
+	<div class="row">
+		<table class="table table-striped">
+			<tbody>
+				<tr>
+					<th>Name</th>
+					<th>Amount</th>
+					<th></th>
+				</tr>
+				@foreach (var category in Model.CurrentBudgetCategorys) {
+					<tr>
+						<td class="@(category.Deleted ? "deleted" : "")"> @category.Name</td>
+						<td>
+							<a class="btn btn-xs btn-info" href="@Url.Action("RemoveCategory", new { id = category.Id })">Remove Category</a>
+						</td>
+					</tr>
+				}
+			<tbody>
+		</table>
+	</div>
+</div>

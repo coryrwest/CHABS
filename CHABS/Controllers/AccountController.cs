@@ -1,8 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using CHABS.API.Services;
 using CHABS.Models;
+using CRWestropp.Utilities.Extensions;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
@@ -11,8 +15,12 @@ namespace CHABS.Controllers {
 	[Authorize]
 	public class AccountController : BaseController {
 		private ApplicationUserManager _userManager;
+		private readonly HouseholdService HouseholdService;
+		private readonly UserRoleService UserService;
 
 		public AccountController() {
+			HouseholdService = new HouseholdService(AppSession);
+			UserService = new UserRoleService(AppSession);
 		}
 
 		public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager) {
@@ -122,8 +130,19 @@ namespace CHABS.Controllers {
 		//
 		// GET: /Account/Register
 		[AllowAnonymous]
-		public ActionResult Register() {
-			return View();
+		public ActionResult Register(string id) {
+			var model = new RegisterViewModel();
+			if (!id.IsNull()) {
+				var invitedUsers = UserService.InvitedUsers.GetSingle(new { token = id });
+				if (invitedUsers == null) {
+					// We do not have an invited user. WTF?
+				} else {
+					model.Email = invitedUsers.Email;
+					model.HouseholdId = invitedUsers.HouseholdId;
+				}
+			}
+
+			return View(model);
 		}
 
 		//
@@ -133,9 +152,17 @@ namespace CHABS.Controllers {
 		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> Register(RegisterViewModel model) {
 			if (ModelState.IsValid) {
-				var user = new AppUser {UserName = model.Email, Email = model.Email};
+				var user = new AppUser { UserName = model.Email, Email = model.Email };
 				var result = await UserManager.CreateAsync(user, model.Password);
 				if (result.Succeeded) {
+					// If we have a household, add them to it
+					if (model.HouseholdId != null) {
+						HouseholdService.HouseholdMaps.AddUserToHousehold(user.Id.ToGuid(), (Guid) model.HouseholdId);
+						// Remove the invited user
+						var iuser = UserService.InvitedUsers.GetSingle(new {email = model.Email, householdid = model.HouseholdId});
+						UserService.InvitedUsers.DeleteObject(iuser);
+					}
+
 					await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
 					// For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771

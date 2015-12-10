@@ -24,11 +24,11 @@ namespace CHABS.API.Services {
 
 		public Household GetHouseholdForUser(Guid userId) {
 			var household =
-				db.Query<Household>("select households.* from households " +
+				db.QuerySingle<Household>("select households.* from households " +
 									"inner join householdusermap on householdusermap.householdid = households.id " +
 									"where householdusermap.userid = @UserId " +
 									"limit 1;",
-					new {UserId = userId});
+					new { UserId = userId });
 			return household;
 		}
 	}
@@ -72,18 +72,25 @@ namespace CHABS.API.Services {
 		/// </summary>
 		/// <param name="userid"></param>
 		/// <param name="householdId"></param>
-		public void AddUserToHousehold(Guid userid, Guid householdId) {
+		public void AddUserToHousehold(Guid userid, Guid householdId, Guid masterUserId = default(Guid)) {
 			// Delete from the map
 			db.Execute(
 				@"	DELETE FROM householdusermap
 					where userid = @UserId",
 				new { UserId = userid });
 			// Add them to the new household
-			db.Execute(
-				@"	INSERT INTO householdusermap (userid, householdid) 
+			var command = "";
+			// Should we use the masteruserid?
+			if (masterUserId == Guid.Empty) {
+				command = @"	INSERT INTO householdusermap (userid, householdid) 
 					SELECT @UserId as userid, @HouseholdId as householdid  
-					where not @UserId in (select userid from householdusermap where userid = @UserId)",
-				new { UserId = userid, HouseholdId = householdId });
+					where not @UserId in (select userid from householdusermap where userid = @UserId)";
+			} else {
+				command = @"	INSERT INTO householdusermap (userid, householdid, masteruserid) 
+					SELECT @UserId as userid, @HouseholdId as householdid, @UserId as masteruserid 
+					where not @UserId in (select userid from householdusermap where userid = @UserId)";
+			}
+			db.Execute(command, new { UserId = userid, HouseholdId = householdId });
 		}
 
 		public void RemoveUserFromHousehold(Guid userid, Guid householdId) {

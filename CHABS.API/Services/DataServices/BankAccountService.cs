@@ -63,6 +63,11 @@ namespace CHABS.API.Services {
 			return GetList(where, includeDeleted);
 		}
 
+		public List<Category> GetAllForBudget(Guid budgetId, bool includeDeleted = false) {
+			var sql = "select * from categories join budgetcategorymap map on map.categoryid = categories.id where map.budgetid = @budgetid";
+			return db.Query<Category>(sql, new { budgetid = budgetId }).ToList();
+		}
+
 		public Category FindCategoryMatch(string transactionDescription) {
 			string query = string.Format("select categoryid, match from category_matches join categories on categories.id = categoryid where categories.householdid = @householdid");
 			var matches = db.Query(query, new { householdid = Session.Household.Id });

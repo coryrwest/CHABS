@@ -79,6 +79,11 @@ namespace CHABS.API.DataAccess {
 			}
 		}
 
+		/// <summary>
+		/// Will execute a query against the database, no return value
+		/// </summary>
+		/// <param name="sql"></param>
+		/// <param name="parameters"></param>
 		public void Execute(string sql, object parameters) {
 			using (connection = new NpgsqlConnection(connectionString)) {
 				connection.Execute(sql, parameters);
@@ -99,13 +104,25 @@ namespace CHABS.API.DataAccess {
 		/// <param name="sql"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		public T Query<T>(string sql, object parameters) where T : DataObject {
+		public IEnumerable<T> Query<T>(string sql, object parameters) where T : DataObject {
 			using (connection = new NpgsqlConnection(connectionString)) {
 				var results = connection.Query<T>(sql, parameters);
-				var result = results.FirstOrDefault();
-				if (results != null) result.IsNew = false;
-				return result;
+				return results;
 			}
+		}
+
+		/// <summary>
+		/// Query the database with DataObject wrapping. Returns first result.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="sql"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public T QuerySingle<T>(string sql, object parameters) where T : DataObject {
+			var results = Query<T>(sql, parameters);
+			var result = results.FirstOrDefault();
+			if (results != null) result.IsNew = false;
+			return result;
 		}
 
 		///// <summary>

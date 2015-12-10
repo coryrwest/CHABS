@@ -138,8 +138,8 @@ namespace CHABS.Controllers {
 			var logins = Service.Logins.GetHouseholdLoginIds(GetHouseholdIdForCurrentUser());
 
 			var model = new TransactionsViewModel();
-			model.RangeString = "Last 50 Transactions";
-			model.Transations = Service.Transactions.GetLast50Transactions(logins);
+			model.RangeString = "Transactions this month";
+			model.Transations = Service.Transactions.GetThisMonthsTransactions(logins);
 			return View(model);
 		}
 
