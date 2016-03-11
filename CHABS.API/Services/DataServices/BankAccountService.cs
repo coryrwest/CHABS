@@ -141,7 +141,6 @@ namespace CHABS.API.Services {
 
 		public List<BankLoginAccountTransaction> GetLast50Transactions(List<Guid> loginIds) {
 			var serviceIdsPart = GetFormattedServiceIds(loginIds);
-
 			if (serviceIdsPart.IsNull()) {
 				return new List<BankLoginAccountTransaction>();
 			}
@@ -153,6 +152,9 @@ namespace CHABS.API.Services {
 
 		public List<BankLoginAccountTransaction> GetLast30DaysTransactions(List<Guid> loginIds) {
 			var serviceIdsPart = GetFormattedServiceIds(loginIds);
+			if (serviceIdsPart.IsNull()) {
+				return new List<BankLoginAccountTransaction>();
+			}
 
 			// Get dates
 			var startDate = DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd");
@@ -165,6 +167,9 @@ namespace CHABS.API.Services {
 
 		public List<BankLoginAccountTransaction> GetThisMonthsTransactions(List<Guid> loginIds) {
 			var serviceIdsPart = GetFormattedServiceIds(loginIds);
+			if (serviceIdsPart.IsNull()) {
+				return new List<BankLoginAccountTransaction>();
+			}
 
 			// Get dates
 			var startDate = DateTime.Now.FirstDay().ToString("yyyy-MM-dd");

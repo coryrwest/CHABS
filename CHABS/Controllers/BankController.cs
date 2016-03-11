@@ -68,7 +68,7 @@ namespace CHABS.Controllers {
 				Service.Accounts.Upsert(bank);
 			}
 
-			return PartialView("LoginListPartial", new LoginListViewModel(new List<BankLogin>()));
+			return RedirectToAction("Logins");
 		}
 
 		public ActionResult ConnectLogin(Guid loginId) {

@@ -185,7 +185,11 @@ namespace Dapper
 			if (Debugger.IsAttached)
 				Trace.WriteLine(String.Format("GetList<{0}>: {1}", currenttype, sb));
 
-			return connection.Query<T>(sb.ToString(), null, transaction, true, commandTimeout);
+	        try {
+		        return connection.Query<T>(sb.ToString(), null, transaction, true, commandTimeout);
+	        } catch (Exception ex) {
+				throw new Exception("There was an error in your query.", new Exception(sb.ToString(), ex));
+	        }
 		}
 
 		/// <summary>

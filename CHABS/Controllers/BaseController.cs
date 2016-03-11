@@ -40,7 +40,8 @@ namespace CHABS.Controllers {
 		public BaseController() {
 			if (AppSession == null) {
 				// Get from session first
-				if (System.Web.HttpContext.Current.Session["Session"] != null) {
+				if (System.Web.HttpContext.Current.Session["Session"] != null &&
+					(System.Web.HttpContext.Current.Session["Session"] as Session).UserId != Guid.Empty) {
 					AppSession = (Session)System.Web.HttpContext.Current.Session["Session"];
 				} else {
 					AppSession = new Session();

@@ -27,8 +27,21 @@ namespace CHABS.Helpers {
 			string[] acceptedActions = actions.Trim().Split(',').Distinct().ToArray();
 			string[] acceptedControllers = controllers.Trim().Split(',').Distinct().ToArray();
 
-			return acceptedActions.Contains(currentAction) && acceptedControllers.Contains(currentController) ?
-				cssClass : String.Empty;
+			// Negatives
+			string[] negativeActions = acceptedActions.Where(a => a.StartsWith("!")).Select(a => a.Substring(1)).ToArray();
+
+			// Current action is in the list and controller matches
+			var actionMatched = acceptedActions.Contains(currentAction) && acceptedControllers.Contains(currentController);
+			// Action list is empty and controller matches
+			var controllerMatchedAllActions = !acceptedActions.Any(a => !a.StartsWith("!")) && acceptedControllers.Contains(currentController);
+			// Current action is in the negative list and controller matches
+			var negativeTrigger = negativeActions.Length > 0 && !negativeActions.Contains(currentAction);
+
+			if (actionMatched || controllerMatchedAllActions) {
+				return cssClass;
+			} else {
+				return string.Empty;
+			}
 		}
 	}
 }

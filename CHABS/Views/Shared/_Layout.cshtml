@@ -22,7 +22,7 @@
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
 					@if (User.Identity.IsAuthenticated) {
-						<li class="@Html.IsSelected("Bank,Budgets", "", "active")">
+						<li class="@Html.IsSelected("Bank,Budgets", "!Update", "active")">
 							@Html.ActionLink("Banking", "TransactionList", "Bank")
 						</li>
 						<li class="@Html.IsSelected("Account,Dropbox,Household", "ProfileSettings,Settings,Index,Authorize", "active")">
@@ -38,7 +38,15 @@
 		</div>
 	</div>
 	<div class="container body-content">
-		@RenderSection("SecondaryNav", false)
+		@if (User.Identity.IsAuthenticated) {
+			<div class="navbar navbar-default navbar-fixed-top secondary-nav">
+				<div class="container">
+					<div class="navbar-collapse collapse">
+						@RenderSection("SecondaryNav", false)
+					</div>
+				</div>
+			</div>
+		}
 		<div class="inner-body-content">
 			@RenderBody()
 		</div>
