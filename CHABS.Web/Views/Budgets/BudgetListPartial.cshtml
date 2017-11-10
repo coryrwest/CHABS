@@ -1,0 +1,36 @@
+﻿@model CHABS.Models.BudgetListViewModel
+
+<div class="col-md-12">
+	<div class="row">
+		<table class="table table-striped">
+			<tbody>
+				<tr>
+					<th>Name</th>
+					<th>Amount</th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
+				@foreach (var budget in Model.CurrentBudgets) {
+					<tr>
+						<td class="@(budget.Deleted ? "deleted" : "")"> @budget.Name</td>
+						<td>@budget.Amount</td>
+						<td>
+							@if (budget.Deleted) {
+								<a class="btn btn-xs btn-warning" href="@Url.Action("RestoreBudget", new {id = budget.Id})">Restore</a>
+							} else {
+								<a class="btn btn-xs btn-warning" href="@Url.Action("DeleteBudget", new { id = budget.Id })">Delete</a>
+							}
+						</td>
+						<td>
+							<a class="btn btn-xs btn-default" href="@Url.Action("Categories", new { id = budget.Id })">Categories</a>
+						</td>
+						<td>
+							<a class="btn btn-xs btn-info" href="@Url.Action("EditBudget", new { id = budget.Id })">Edit</a>
+						</td>
+					</tr>
+				}
+			<tbody>
+		</table>
+	</div>
+</div>

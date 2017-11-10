@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CHABS.API.Objects;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 
 namespace CHABS.API.Services {
 	public static class TransactionUpdateService {
@@ -26,18 +22,18 @@ namespace CHABS.API.Services {
 		/// Will get transactions from the bank service, check existing,
 		/// map categories, and save to the database.
 		/// </summary>
-		public static void DoTransactionUpdate(Options options) {
+		public static void DoTransactionUpdate(PlaidOptions options, Options methodOptions) {
 			// Loop through the login ids
-			foreach (Guid loginId in options.LoginIds) {
-				ProcessLogin(loginId, options);
+			foreach (Guid loginId in methodOptions.LoginIds) {
+				ProcessLogin(options, loginId, methodOptions);
 			}
 		}
 
-		private static void ProcessLogin(Guid loginId, Options options) {
-			var login = options.DataService.Logins.GetById(loginId);
+		private static void ProcessLogin(PlaidOptions options, Guid loginId, Options methodOptions) {
+			var login = methodOptions.DataService.Logins.GetById(loginId);
 			if (login.AccessToken != null) {
-				var transactions = options.BankService.GetRecentTransactions(login.AccessToken).Result;
-				ProcessTransactions(transactions, login, options);
+				var transactions = methodOptions.BankService.GetRecentTransactions(options, login.AccessToken, DateTime.Now.FirstDay(), DateTime.Now.LastDay());
+				ProcessTransactions(transactions, login, methodOptions);
 			}
 		}
 

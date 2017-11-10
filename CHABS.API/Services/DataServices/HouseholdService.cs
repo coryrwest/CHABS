@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CHABS.API.Objects;
-using CRWestropp.Utilities.Extensions;
 
 namespace CHABS.API.Services {
 	public class HouseholdService {
@@ -63,8 +62,8 @@ namespace CHABS.API.Services {
 		public bool IsUserInHousehold(Guid userId, Guid householdId) {
 			var household =
 				db.Query("select count(*) from householdusermap where userid = @UserId and householdid = @HouseholdId",
-					new { UserId = userId, HouseholdId = householdId }).ToInt(0);
-			return household != 0;
+					new { UserId = userId, HouseholdId = householdId });
+			return (int)household.First() != 0;
 		}
 
 		/// <summary>

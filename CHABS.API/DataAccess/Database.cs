@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using CHABS.API.Objects;
-using CRWestropp.Utilities.Extensions;
 using Dapper;
-using Newtonsoft.Json;
 using Npgsql;
-using OfficeOpenXml.ConditionalFormatting;
-using OfficeOpenXml.FormulaParsing.Utilities;
 
 namespace CHABS.API.DataAccess {
 	public class Database : IDisposable {
@@ -20,15 +15,15 @@ namespace CHABS.API.DataAccess {
 		private NpgsqlConnection connection;
 		private string connectionString;
 
-		public Database(string connectionName) {
+		public Database(string conn) {
 			SimpleCRUD.SetDialect(SimpleCRUD.Dialect.PostgreSQL);
-			connectionString = ConfigurationManager.ConnectionStrings[connectionName].ConnectionString;
+			connectionString = conn;
 		}
 
 		public Guid Insert(DataObject poco) {
 			using (connection = new NpgsqlConnection(connectionString)) {
-				Guid id = connection.Insert<Guid>(poco).ToGuid();
-				return id;
+			    connection.Insert<Guid>(poco);
+				return poco.Id;
 			}
 		}
 
@@ -52,8 +47,8 @@ namespace CHABS.API.DataAccess {
 		public List<T> GetList<T>(dynamic whereClause) where T : DataObject {
 			using (connection = new NpgsqlConnection(connectionString)) {
 				var poco = Activator.CreateInstance<T>();
-				var dictWhere = ((object)whereClause).ToDictionary();
-				string where = BuildWhere(dictWhere, poco);
+                // TODO: Get rid of this shit
+				string where = BuildWhere(Dyn2Dict(whereClause), poco);
 				var list = new List<T>();
 				list = connection.GetList<T>(where, (object)whereClause).ToList();
 				list.ForEach(l => l.IsNew = false);
@@ -147,8 +142,17 @@ namespace CHABS.API.DataAccess {
 			connection.Close();
 		}
 
-		#region Helpers
-		private static string BuildWhere(IDictionary<string, object> props, object sourceEntity) {
+        #region Helpers
+	    public Dictionary<String, Object> Dyn2Dict(dynamic dynObj) {
+	        var dictionary = new Dictionary<string, object>();
+	        foreach (PropertyDescriptor propertyDescriptor in TypeDescriptor.GetProperties(dynObj)) {
+	            object obj = propertyDescriptor.GetValue(dynObj);
+	            dictionary.Add(propertyDescriptor.Name, obj);
+	        }
+	        return dictionary;
+	    }
+
+        private static string BuildWhere(IDictionary<string, object> props, object sourceEntity) {
 			var sb = new StringBuilder();
 			sb.Append(" where ");
 			for (var i = 0; i < props.Count(); i++) {

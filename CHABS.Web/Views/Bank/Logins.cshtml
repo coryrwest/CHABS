@@ -1,0 +1,117 @@
+﻿@using CHABS.Models
+@model CHABS.Models.BankLoginViewModel
+@{
+	ViewBag.Title = "Logins";
+}
+
+@section SecondaryNav {
+	@Html.Partial("_BankNavPartial")
+}
+
+<h2>@ViewBag.Title</h2>
+<div class="row">
+	<div class="col-md-12" id="results">
+		@Html.Partial("LoginListPartial", new LoginListViewModel(Model.CurrentLogins))
+	</div>
+</div>
+<hr />
+<div class="row">
+	<div class="col-md-12">
+		<h3>Add Login</h3>
+	    <div class="col-md-12">
+	        <form asp-action="Logins" data-ajax="true" data-method="post" data-ajax-mode="replace" data-ajax-update="#results" class="form-horizontal">
+	            <div asp-validation-summary="All" class="text-danger"></div>
+	            <div class="form-group">
+	                @Html.LabelFor(m => m.Name, new { @class = "col-md-3 control-label" })
+	                <div class="col-md-9">
+	                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+	                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+	                </div>
+	            </div>
+	        </form>
+	        <button id="link-button">Link Account</button>
+	    </div>
+	</div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+
+	<script>
+		function AjaxBegin() {
+			$('#results').html('');
+		}
+
+		function AjaxComplete() {
+		}
+
+		$(document).ready(function () {
+			$('#plaid-link-button').addClass('btn');
+			$('#plaid-link-button').addClass('btn-default');
+		});
+
+		function deleteClick() {
+			var id = $(this).attr('id');
+			$.ajax({
+				url: "@Url.Action("DeleteLogin")" + "?loginId=" + id,
+				success: function (data) {
+					$('#results').html(data);
+				}
+			});
+		}
+
+		$(document).on('click', '.delete-account', deleteClick);
+	</script>
+    
+    <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+    <script type="text/javascript">
+        (function($) {
+            var handler = Plaid.create({
+                clientName: 'CHABS',
+                env: '@Model.PlaidEnv',
+                apiVersion: 'v2',
+                key: '2865c40255320ca75297455cc9adac', // Replace with your public_key to test with live credentials
+                product: ['transactions'],
+                //webhook: 'https://requestb.in', // Optional – use webhooks to get transaction and error updates
+                onLoad: function() {
+                    // Optional, called when Link loads
+                },
+                onSuccess: function(public_token, metadata) {
+                    // Send the public_token to your app server.
+                    // The metadata object contains info about the institution the
+                    // user selected and the account ID, if `selectAccount` is enabled.
+                    $.post('@Url.Action("Logins", "Bank")', {
+                        public_token: public_token,
+                        name: $('#Name').val()
+                    });
+                },
+                onExit: function(err, metadata) {
+                    // The user exited the Link flow.
+                    if (err != null) {
+                        // The user encountered a Plaid API error prior to exiting.
+                    }
+                    // metadata contains information about the institution
+                    // that the user selected and the most recent API request IDs.
+                    // Storing this information can be helpful for support.
+                },
+                onEvent: function(eventName, metadata) {
+                    // Optionally capture Link flow events, streamed through
+                    // this callback as your users connect an Item to Plaid.
+                    // For example:
+                    // eventName = "TRANSITION_VIEW"
+                    // metadata  = {
+                    //   link_session_id: "123-abc",
+                    //   mfa_type:        "questions",
+                    //   timestamp:       "2017-09-14T14:42:19.350Z",
+                    //   view_name:       "MFA",
+                    // }
+                }
+            });
+
+            $('#link-button').on('click', function(e) {
+                handler.open();
+            });
+        })(jQuery);
+    </script>
+}

@@ -1,15 +1,7 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using CHABS.API.Objects;
-using CRWestropp.Utilities.Extensions;
-using DbExtensions;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using Database = CHABS.API.DataAccess.Database;
 
 namespace CHABS.API.Services {
@@ -18,14 +10,12 @@ namespace CHABS.API.Services {
 	}
 
 	public class BaseService<T> : IDataService, IDisposable where T : DataObject {
-		protected Database db =
-			new Database((System.Configuration.ConfigurationManager.AppSettings["Environment"] ?? "Development") == "Production"
-				? "LiveConnection"
-				: "DefaultConnection");
+	    protected Database db;
 		public Session Session { get; private set; }
 
 		public BaseService(Session session) {
 			Session = session;
+		    db = new Database(session.ConnectionString);
 		}
 
 		/// <summary>
@@ -99,7 +89,7 @@ namespace CHABS.API.Services {
 		}
 
 		public virtual List<T> GetAllForHousehold(bool includeDeleted = false) {
-			var items = GetList(new {householdid = Session.Household.Id}, includeDeleted).ToList();
+			var items = GetList(new {householdid = Session.HouseholdId}, includeDeleted).ToList();
 			return items;
 		} 
 
@@ -147,9 +137,9 @@ namespace CHABS.API.Services {
 			// Add requires params
 			var poco = Activator.CreateInstance<T>();
 			if (poco.Perpetual && !includeDeleted) {
-				dynamic where = whereClause.ToDynamic();
-				where.deleted = false;
-				whereClause = where;
+				//dynamic where = whereClause.ToDynamic();
+				//where.deleted = false;
+				//whereClause = where;
 			}
 			var items = db.GetList<T>(whereClause);
 
@@ -164,7 +154,7 @@ namespace CHABS.API.Services {
 		public List<T> GetList(string whereClause, bool includeDeleted = false) {
 			var poco = Activator.CreateInstance<T>();
 			if (poco.Perpetual && !includeDeleted) {
-				whereClause = whereClause.InsertBefore(" and deleted = false ", new[] { "order by", "group by" });
+				//whereClause = whereClause.InsertBefore(" and deleted = false ", new[] { "order by", "group by" });
 			}
 			var results =  db.GetList<T>(whereClause);
 			return results;
@@ -180,9 +170,9 @@ namespace CHABS.API.Services {
 			// Add requires params
 			var poco = Activator.CreateInstance<T>();
 			if (poco.Perpetual && !ignorePerpetual) {
-				dynamic where = whereClause.ToDynamic();
-				where.deleted = false;
-				whereClause = where;
+				//dynamic where = whereClause.ToDynamic();
+				//where.deleted = false;
+				//whereClause = where;
 			}
 			var item = db.GetList<T>(whereClause).FirstOrDefault();
 			return item;
@@ -203,6 +193,7 @@ namespace CHABS.API.Services {
 				throw new PermissionsException();
 			}
 			BeforeInsert(dataObject);
+		    dataObject.Id = Guid.NewGuid();
 			db.Insert(dataObject);
 			dataObject.IsNew = false;
 			return dataObject;

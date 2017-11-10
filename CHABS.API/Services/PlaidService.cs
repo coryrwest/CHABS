@@ -3,177 +3,154 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using CHABS.API.Objects;
-using CRWestropp.Utilities;
-using CRWestropp.Utilities.Extensions;
 using Newtonsoft.Json;
-using RestSharp;
 
 namespace CHABS.API.Services {
-	public class PlaidService : IBankDataService {
-		public RestClient Client = new RestClient(ConfigurationManager.AppSettings["PlaidURL"]);
+    public class PlaidService : IBankDataService {
+        public HttpClient Client = new HttpClient();
+        
+        /// <summary>
+        /// Will authenticate the user and save all banks associated with the institution
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <param name="intitution"></param>
+        /// <param name="hookUrl"></param>
+        /// <returns></returns>
+        public string AuthenticateBankUser(PlaidOptions options, BankDataServiceOptions serviceOptions, out List<BankLoginAccount> bankList) {
+            var body = new {
+                client_id = options.ClientId,
+                secret = options.ClientSecret,
+                username = serviceOptions.UserName,
+                password = serviceOptions.Password,
+                type = serviceOptions.Institution,
+                options = new {
+                    webhook = serviceOptions.HookUrl,
+                    login_only = true
+                }
+            };
+            var response = Client.PostAsync($"{options.Url}/connect", new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json")).Result;
 
-		/// <summary>
-		/// Will authenticate the user and save all banks associated with the institution
-		/// </summary>
-		/// <param name="username"></param>
-		/// <param name="password"></param>
-		/// <param name="intitution"></param>
-		/// <param name="hookUrl"></param>
-		/// <returns></returns>
-		public string AuthenticateBankUser(BankDataServiceOptions options, out List<BankLoginAccount> bankList) {
-			var request = new RestRequest("connect", Method.POST);
-			var body = new {
-				client_id = ConfigurationManager.AppSettings["PlaidID"],
-				secret = ConfigurationManager.AppSettings["PlaidSecret"],
-				username = options.UserName,
-				password = options.Password,
-				type = options.Institution,
-				options = new {
-					webhook = options.HookUrl,
-					login_only = true
-				}
-			};
-			request.AddJsonBody(body);
-			request.RequestFormat = DataFormat.Json;
-			var response = Client.Execute(request);
+            var jresponse = JsonConvert.DeserializeObject<Dictionary<string,object>>(response.Content.ReadAsStringAsync().Result);
 
-			JsonObject jresponse = JsonConvert.DeserializeObject<JsonObject>(response.Content);
+            var banks = JsonConvert.DeserializeObject<Dictionary<string, object>[]>(jresponse["accounts"].ToString());
+            bankList = banks.Select(bank => {
+                var meta = JsonConvert.DeserializeObject<Dictionary<string, object>>(bank["meta"].ToString());
+                return new BankLoginAccount() {
+                    LoginId = serviceOptions.LoginId,
+                    Name = meta["name"].ToString(),
+                    ServiceId = bank["_id"].ToString()
+                };
+            }).ToList();
 
-			JsonObject[] banks = JsonConvert.DeserializeObject<JsonObject[]>(jresponse["accounts"].ToString());
-			bankList = banks.Select(bank => {
-				var meta = JsonConvert.DeserializeObject<JsonObject>(bank["meta"].ToString());
-				return new BankLoginAccount() {
-					LoginId = options.LoginId,
-					Name = meta["name"].ToString(),
-					ServiceId = bank["_id"].ToString()
-				};
-			}).ToList();
+            if (response.StatusCode == HttpStatusCode.OK) {
+                return jresponse["access_token"].ToString();
+            } else {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
 
-			if (response.StatusCode == HttpStatusCode.OK) {
-				return jresponse["access_token"].ToString();
-			} else {
-				throw new Exception(response.StatusDescription);
-			}
-		}
+        /// <summary>
+        /// Will exchange a public token from plaid link to an access token
+        /// </summary>
+        /// <param name="afterAuthData"></param>
+        /// <returns></returns>
+        public string RunAfterAuthFunction(PlaidOptions options, string afterAuthData) {
+            var body = new {
+                client_id = options.ClientId,
+                secret = options.ClientSecret,
+                public_token = afterAuthData
+            };
+            var response = Client.PostAsync($"{options.Url}/item/public_token/exchange", new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json")).Result;
+            var jresponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response.Content.ReadAsStringAsync().Result);
+            if (response.StatusCode == HttpStatusCode.OK) {
+                return jresponse["access_token"].ToString();
+            } else {
+                throw new Exception(response.ReasonPhrase, new Exception(jresponse.ToString()));
+            }
+        }
 
-		/// <summary>
-		/// Will exchange a public token from plaid link to an access token
-		/// </summary>
-		/// <param name="afterAuthData"></param>
-		/// <returns></returns>
-		public string RunAfterAuthFunction(string afterAuthData) {
-			var request = new RestRequest("exchange_token", Method.POST);
-			var body = new {
-				client_id = ConfigurationManager.AppSettings["PlaidID"],
-				secret = ConfigurationManager.AppSettings["PlaidSecret"],
-				public_token = afterAuthData
-			};
-			request.AddJsonBody(body);
-			request.RequestFormat = DataFormat.Json;
-			var response = Client.Execute(request);
-			JsonObject jresponse = JsonConvert.DeserializeObject<JsonObject>(response.Content);
-			if (response.StatusCode == HttpStatusCode.OK) {
-				return jresponse["access_token"].ToString();
-			} else {
-				throw new Exception(response.StatusDescription, new Exception(jresponse.ToString()));
-			}
-		}
+        public List<BankLoginAccount> GetAccounts(PlaidOptions options, Guid loginId, string token) {
+            var body = new {
+                client_id = options.ClientId,
+                secret = options.ClientSecret,
+                access_token = token
+            };
+            var response = Client.PostAsync($"{options.Url}/accounts/get", new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json")).Result;
+            var jresponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response.Content.ReadAsStringAsync().Result);
+            if (response.StatusCode != HttpStatusCode.OK) {
+                throw new Exception(response.ReasonPhrase, new Exception(jresponse.ToString()));
+            }
 
-		public Task<KeyValuePairs> GetInstitutions() {
-			var func = new Func<KeyValuePairs>(() => {
-				var request = new RestRequest("institutions", Method.GET);
-				var response = Client.Execute(request);
-				if (response.StatusCode != HttpStatusCode.OK) {
-					throw new Exception(response.StatusDescription);
-				}
-				JsonObject[] institutions = JsonConvert.DeserializeObject<JsonObject[]>(response.Content);
-				var kvp = new KeyValuePairs();
-				foreach (JsonObject institution in institutions) {
-					kvp.Add(institution["type"].ToString(), institution["name"].ToString());
-				}
-				return kvp;
-			});
-			return Task.Factory.StartNew(func);
-		}
+            var accountList = new List<BankLoginAccount>();
+            var accounts = JsonConvert.DeserializeObject<Dictionary<string, object>[]>(jresponse["accounts"].ToString());
+            foreach (Dictionary<string, object> account in accounts) {
+                accountList.Add(new BankLoginAccount() {
+                    LoginId = loginId,
+                    Name = account["name"].ToString(),
+                    ServiceId = account["account_id"].ToString(),
+                    Shown = true
+                });
+            }
 
-		public Task<List<BankLoginAccount>> GetAccounts(Guid loginId, string token) {
-			var func = new Func<List<BankLoginAccount>>(() => {
-				var response = RetreiveAccountsAndTransactions(token);
+            return accountList;
+        }
 
-				var accountList = new List<BankLoginAccount>();
-				JsonObject jresponse = JsonConvert.DeserializeObject<JsonObject>(response);
-				var accounts = JsonConvert.DeserializeObject<JsonObject[]>(jresponse["accounts"].ToString());
-				foreach (JsonObject account in accounts) {
-					accountList.Add(new BankLoginAccount() {
-						LoginId = loginId,
-						Name = JsonConvert.DeserializeObject<JsonObject>(account["meta"].ToString())["name"].ToString(),
-						ServiceId = account["_id"].ToString(),
-						Shown = true
-					});
-				}
+        public List<BankLoginAccountTransaction> GetRecentTransactions(PlaidOptions options, string token, DateTime start, DateTime end) {
+            var response = RetreiveAccountsAndTransactions(options, token, start, end);
 
-				return accountList;
-			});
-			return Task.Factory.StartNew(func);
-		}
+            var transactionList = new List<BankLoginAccountTransaction>();
+            Dictionary<string, object> jresponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
+            var transactions = JsonConvert.DeserializeObject<Dictionary<string, object>[]>(jresponse["transactions"].ToString());
+            foreach (Dictionary<string, object> transaction in transactions) {
+                transactionList.Add(new BankLoginAccountTransaction() {
+                    Date = DateTime.Parse(transaction["date"].ToString()),
+                    Amount = Decimal.Negate(Convert.ToDecimal(transaction["amount"])),
+                    Description = transaction["name"].ToString(),
+                    ServiceId = transaction["transaction_id"].ToString(),
+                    ServiceAccountId = transaction["account_id"].ToString()
+                });
+            }
 
-		public Task<List<BankLoginAccountTransaction>> GetRecentTransactions(string token) {
-			var func = new Func<List<BankLoginAccountTransaction>>(() => {
-				var response = RetreiveAccountsAndTransactions(token);
-				
-				var transactionList = new List<BankLoginAccountTransaction>();
-				JsonObject jresponse = JsonConvert.DeserializeObject<JsonObject>(response);
-				var transactions = JsonConvert.DeserializeObject<JsonObject[]>(jresponse["transactions"].ToString());
-				foreach (JsonObject transaction in transactions) {
-					transactionList.Add(new BankLoginAccountTransaction() {
-						Date = DateTime.Parse(transaction["date"].ToString()),
-						Amount = Decimal.Negate(transaction["amount"].ToDecimal()),
-						Description = transaction["name"].ToString(),
-						ServiceId = transaction["_id"].ToString(),
-						ServiceAccountId = transaction["_account"].ToString()
-					});
-				}
+            return transactionList;
+        }
 
-				return transactionList;
-			});
-			return Task.Factory.StartNew(func);
-		}
+        private string RetreiveAccountsAndTransactions(PlaidOptions options, string token, DateTime start, DateTime end) {
+            var body = new {
+                client_id = options.ClientId,
+                secret = options.ClientSecret,
+                access_token = token,
+                start_date = start.ToString("yyyy-MM-dd"),
+                end_date = end.ToString("yyyy-MM-dd")
+            };
+            var response = Client.PostAsync($"{options.Url}/transactions/get", new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json")).Result;
 
-		private string RetreiveAccountsAndTransactions(string token) {
-			var request = new RestRequest("connect/get", Method.POST);
-			var body = new {
-				client_id = ConfigurationManager.AppSettings["PlaidID"],
-				secret = ConfigurationManager.AppSettings["PlaidSecret"],
-				access_token = token
-			};
-			request.AddJsonBody(body);
-			request.RequestFormat = DataFormat.Json;
-			var response = Client.Execute(request);
+            if (response.StatusCode != HttpStatusCode.OK) {
+                throw new Exception(response.ReasonPhrase);
+            }
+            return response.Content.ReadAsStringAsync().Result;
+        }
 
-			if (response.StatusCode != HttpStatusCode.OK) {
-				throw new Exception(response.StatusDescription);
-			}
-			return response.Content;
-		}
+        public string DeleteUser(PlaidOptions options, string token) {
+            var body = new {
+                client_id = options.ClientId,
+                secret = options.ClientSecret,
+                access_token = token
+            };
+            var response = Client.SendAsync(
+                new HttpRequestMessage(HttpMethod.Delete,
+                    $"{options.Url}/connect/get") {
+                    Content = new StringContent(JsonConvert.SerializeObject(body))
+                });
 
-		public string DeleteUser(string token) {
-			var request = new RestRequest("connect", Method.DELETE);
-			var body = new {
-				client_id = ConfigurationManager.AppSettings["PlaidID"],
-				secret = ConfigurationManager.AppSettings["PlaidSecret"],
-				access_token = token
-			};
-			request.AddJsonBody(body);
-			request.RequestFormat = DataFormat.Json;
-			var response = Client.Execute(request);
-
-			if (response.StatusCode != HttpStatusCode.OK) {
-				throw new Exception(response.StatusDescription);
-			}
-			return response.Content;
-		}
-	}
+            if (response.Result.StatusCode != HttpStatusCode.OK) {
+                throw new Exception(response.Result.ReasonPhrase);
+            }
+            return response.Result.Content.ReadAsStringAsync().Result;
+        }
+    }
 }

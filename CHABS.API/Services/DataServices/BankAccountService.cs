@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Security.Policy;
 using CHABS.API.Objects;
-using CRWestropp.Utilities.Extensions;
-using NpgsqlTypes;
 
 namespace CHABS.API.Services {
 	public class BankAccountService {
@@ -59,7 +55,7 @@ namespace CHABS.API.Services {
 		}
 
 		public List<Category> GetAll(bool includeDeleted = false) {
-			var where = string.Format("where householdid = '{0}' order by sort, deleted", Session.Household.Id);
+			var where = string.Format("where householdid = '{0}' order by sort, deleted", Session.HouseholdId);
 			return GetList(where, includeDeleted);
 		}
 
@@ -70,12 +66,12 @@ namespace CHABS.API.Services {
 
 		public Category FindCategoryMatch(string transactionDescription) {
 			string query = string.Format("select categoryid, match from category_matches join categories on categories.id = categoryid where categories.householdid = @householdid");
-			var matches = db.Query(query, new { householdid = Session.Household.Id });
+			var matches = db.Query(query, new { householdid = Session.HouseholdId });
 			Guid categoryId = Guid.Empty;
 			foreach (dynamic match in matches) {
 				if (transactionDescription.ToLower().Contains(match.match.ToLower())) {
 					string id = match.categoryid.ToString();
-					categoryId = id.ToGuid();
+				    categoryId = Guid.Parse(id);
 				}
 			}
 			return GetById(categoryId);
@@ -111,11 +107,11 @@ namespace CHABS.API.Services {
 
 		// Plaid Methods
 		public void SavePublicToken(string token) {
-			db.Execute("insert into public_token_temp (publictoken, userid) values (@Token, @UserId);", new { Token = token, UserId = Session.UserId });
+			db.Execute("insert into public_token_temp (id, publictoken, userid) values (@Id, @Token, @UserId);", new { Id=  Guid.NewGuid(), Token = token, UserId = Session.UserId });
 		}
 
 		public void DeletePublicToken(string token) {
-			db.Execute("delete from public_token_temp  where publictoken = @Token and userid = @UserId;", new { Token = token, UserId = Session.UserId });
+			db.Execute("delete from public_token_temp where publictoken = @Token and userid = @UserId;", new { Token = token, UserId = Session.UserId });
 		}
 	}
 
@@ -124,24 +120,26 @@ namespace CHABS.API.Services {
 		}
 
 		public List<BankLoginAccountTransaction> GetDateRangeTransactions(DateTime startDate, DateTime endDate, List<Guid> loginIds) {
-			var loginQueryPart = loginIds.JoinFormat(",", "'{0}'");
-			var query = string.Format("where loginid in ({2}) and date between '{0}' and '{1}' order by date desc",
-				startDate.ToPostgresString(), endDate.ToPostgresString(), loginQueryPart);
+			//var loginQueryPart = loginIds.JoinFormat(",", "'{0}'");
+			//var query = string.Format("where loginid in ({2}) and date between '{0}' and '{1}' order by date desc",
+			//	startDate.ToPostgresString(), endDate.ToPostgresString(), loginQueryPart);
 
-			var transactions = GetList(query);
-			return transactions;
+			//var transactions = GetList(query);
+			//return transactions;
+		    return null;
 		}
 
 		public List<BankLoginAccountTransaction> GetMonthTransactions(List<Guid> loginIds, int month, int year = 0) {
-			var rangeYear = year == 0 ? DateTime.Now.Year : year;
-			var startDate = new DateTime(rangeYear, month, 1).FirstDay();
-			var endDate = new DateTime(rangeYear, month, 1).LastDay();
-			return GetDateRangeTransactions(startDate, endDate, loginIds);
+			//var rangeYear = year == 0 ? DateTime.Now.Year : year;
+			//var startDate = new DateTime(rangeYear, month, 1).FirstDay();
+			//var endDate = new DateTime(rangeYear, month, 1).LastDay();
+			//return GetDateRangeTransactions(startDate, endDate, loginIds);
+		    return null;
 		}
 
 		public List<BankLoginAccountTransaction> GetLast50Transactions(List<Guid> loginIds) {
 			var serviceIdsPart = GetFormattedServiceIds(loginIds);
-			if (serviceIdsPart.IsNull()) {
+			if (string.IsNullOrEmpty(serviceIdsPart)) {
 				return new List<BankLoginAccountTransaction>();
 			}
 
@@ -152,7 +150,7 @@ namespace CHABS.API.Services {
 
 		public List<BankLoginAccountTransaction> GetLast30DaysTransactions(List<Guid> loginIds) {
 			var serviceIdsPart = GetFormattedServiceIds(loginIds);
-			if (serviceIdsPart.IsNull()) {
+			if (string.IsNullOrEmpty(serviceIdsPart)) {
 				return new List<BankLoginAccountTransaction>();
 			}
 
@@ -166,18 +164,18 @@ namespace CHABS.API.Services {
 		}
 
 		public List<BankLoginAccountTransaction> GetThisMonthsTransactions(List<Guid> loginIds) {
-			var serviceIdsPart = GetFormattedServiceIds(loginIds);
-			if (serviceIdsPart.IsNull()) {
-				return new List<BankLoginAccountTransaction>();
-			}
+            var serviceIdsPart = GetFormattedServiceIds(loginIds);
+            if (string.IsNullOrEmpty(serviceIdsPart)) {
+                return new List<BankLoginAccountTransaction>();
+            }
 
-			// Get dates
-			var startDate = DateTime.Now.FirstDay().ToString("yyyy-MM-dd");
-			var endDate = DateTime.Now.LastDay().ToString("yyyy-MM-dd");
+            // Get dates
+            var startDate = DateTime.Now.FirstDay().ToString("yyyy-MM-dd");
+            var endDate = DateTime.Now.LastDay().ToString("yyyy-MM-dd");
 
-			var query = string.Format("where serviceaccountid in ({0}) and date between '{1}' and '{2}' order by date desc", serviceIdsPart, startDate, endDate);
-			var transactions = GetList(query);
-			return transactions;
+            var query = string.Format("where serviceaccountid in ({0}) and date between '{1}' and '{2}' order by date desc", serviceIdsPart, startDate, endDate);
+            var transactions = GetList(query);
+            return transactions;
 		}
 
 		private string GetFormattedServiceIds(List<Guid> loginIds) {
@@ -190,7 +188,7 @@ namespace CHABS.API.Services {
 
 			// Join ids for IN
 			var serviceIdsPart = accountServiceIds.JoinFormat(",", "'{0}'");
-			if (serviceIdsPart.IsNull()) {
+			if (string.IsNullOrEmpty(serviceIdsPart)) {
 				return "";
 			} else {
 				return serviceIdsPart;

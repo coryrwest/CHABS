@@ -1,0 +1,7 @@
+﻿@model CHABS.Models.CallbackStatusViewModel
+		   
+@if (Model.Success) {
+	<div class="text-success well-sm"><i class="glyphicon glyphicon-ok"></i> @Model.Message</div>
+} else {
+	<div class="text-warning well-sm"><i class="glyphicon glyphicon-ban-circle"></i> @Model.Message</div>
+}

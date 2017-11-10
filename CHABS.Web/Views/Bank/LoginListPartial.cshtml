@@ -1,0 +1,29 @@
+﻿@model CHABS.Models.LoginListViewModel
+
+
+<h3>Current Logins</h3>
+<div class="col-md-12">
+	<table class="table table-striped">
+		<tbody>
+			<tr>
+				<th>Name</th>
+				<th></th>
+				<th></th>
+				<th></th>
+			</tr>
+			@foreach (var login in Model.CurrentLogins) {
+				<tr>
+					<td>@login.Name</td>
+					<td><a class="btn btn-sm btn-warning delete-account" id="@login.Id">Delete</a></td>
+					@if (string.IsNullOrEmpty(login.AccessToken)) {
+						<td><a class="btn btn-sm btn-info" href="@Url.Action("ConnectLogin", new { loginId = login.Id })">Connect</a></td>
+						<td></td>
+					} else {
+						<td><a class="btn btn-sm btn-info disabled">Connected</a></td>
+						<td><a class="btn btn-sm btn-default" href="@Url.Action("AccountList", new { loginId = login.Id })">Accounts</a></td>
+					}
+				</tr>
+			}
+		<tbody>
+	</table>
+</div>

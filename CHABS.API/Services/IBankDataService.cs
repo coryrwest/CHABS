@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CHABS.API.Objects;
-using CRWestropp.Utilities;
 
 namespace CHABS.API.Services {
 	public interface IBankDataService {
-		Task<KeyValuePairs> GetInstitutions();
-		string AuthenticateBankUser(BankDataServiceOptions options, out List<BankLoginAccount> BankList);
-		Task<List<BankLoginAccountTransaction>> GetRecentTransactions(string token);
-		Task<List<BankLoginAccount>> GetAccounts(Guid loginId, string token);
+		string AuthenticateBankUser(PlaidOptions options, BankDataServiceOptions serviceOptions, out List<BankLoginAccount> BankList);
+		List<BankLoginAccountTransaction> GetRecentTransactions(PlaidOptions options, string token, DateTime start, DateTime end);
+		List<BankLoginAccount> GetAccounts(PlaidOptions options, Guid loginId, string token);
 
 		/// <summary>
 		/// Will exchange a public token from plaid link to an access token
 		/// </summary>
 		/// <param name="afterAuthData"></param>
 		/// <returns></returns>
-		string RunAfterAuthFunction(string afterAuthData);
+		string RunAfterAuthFunction(PlaidOptions options, string afterAuthData);
 
 
-		string DeleteUser(string token);
+		string DeleteUser(PlaidOptions options, string token);
 	}
 
 	public class BankDataServiceOptions {

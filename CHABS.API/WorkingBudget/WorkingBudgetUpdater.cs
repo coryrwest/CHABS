@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using CHABS.API.Objects;
-using Newtonsoft.Json;
 
 namespace CHABS.API.WorkingBudget {
 	public static class WorkingBudgetUpdater {

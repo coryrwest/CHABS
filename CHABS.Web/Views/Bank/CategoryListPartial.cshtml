@@ -1,0 +1,36 @@
+﻿@model CHABS.Models.CategoriesListViewModel
+
+<div class="col-md-12">
+	<div class="row">
+		<table class="table table-striped">
+			<tbody>
+				<tr>
+					<th>Name</th>
+					<th>Excluded from budgets?</th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
+				@foreach (var category in Model.CurrentCategories) {
+					<tr>
+						<td class="@(category.Deleted ? "deleted" : "")">@category.Name</td>
+						<td>@Html.Raw(category.Excluded ? "<span class='glyphicon glyphicon-ok text-success'></span>" : "")</td>
+						<td><a class="btn btn-xs btn-info" href="@Url.Action("ToggleCategory", new { id = category.Id })">Toggle</a></td>
+						<td><a class="btn btn-xs btn-default" href="@Url.Action("CategoryMatches", new { id = category.Id })">Matches</a></td>
+						<td>
+							@if (category.Deleted) {
+								<a class="btn btn-xs btn-warning" href="@Url.Action("RestoreCategory", new {id = category.Id})">Restore</a>
+							} else {
+								<a class="btn btn-xs btn-warning" href="@Url.Action("DeleteCategory", new { id = category.Id })">Delete</a>
+							}
+						</td>
+						<td>
+							<a class="btn btn-xs btn-info" href="@Url.Action("EditCategory", new { id = category.Id })">Edit</a>
+						</td>
+					</tr>
+				}
+			<tbody>
+		</table>
+	</div>
+</div>

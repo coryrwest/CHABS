@@ -1,0 +1,73 @@
+﻿@using CHABS.Models
+@model CHABS.Models.BudgetViewModel
+
+@section SecondaryNav {
+	@Html.Partial("_BankNavPartial")
+}
+
+<h3>Budgets</h3>
+<div class="col-md-12">
+	<div class="col-md-5">
+		@*@using (Ajax.BeginForm("Index", null, new AjaxOptions() {
+				HttpMethod = "POST",
+				UpdateTargetId = "results",
+				OnBegin = "AjaxBegin",
+				OnComplete = "AjaxComplete"
+			}, new { @class = "form-horizontal" })) {
+			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+			<form class="form-horizontal">
+				<div class="form-group">
+					@Html.LabelFor(m => m.CategoryId, new { @class = "col-md-3 control-label" })
+					<div class="col-md-9">
+						@Html.DropDownListFor(m => m.CategoryId, Model.Categories, new { @class = "form-control" })
+						@Html.ValidationMessageFor(m => m.CategoryId, "", new { @class = "text-danger" })
+					</div>
+				</div>
+				<div class="form-group">
+					@Html.LabelFor(m => m.Name, new { @class = "col-md-3 control-label" })
+					<div class="col-md-9">
+						@Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+						@Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+					</div>
+				</div>
+				<div class="form-group">
+					@Html.LabelFor(m => m.Amount, new { @class = "col-md-3 control-label" })
+					<div class="col-md-9">
+						@Html.TextBoxFor(m => m.Amount, new { @class = "form-control" })
+						@Html.ValidationMessageFor(m => m.Amount, "", new { @class = "text-danger" })
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" class="btn btn-default">Add Budget</button>
+					</div>
+				</div>
+			</form>
+			}*@
+	</div>
+	<div class="col-md-7" id="results">
+		@Html.Partial("BudgetListPartial", new BudgetListViewModel(Model.CurrentBudgets))
+	</div>
+</div>
+
+
+@section Scripts {
+	@*@Scripts.Render("~/bundles/form")
+	@Scripts.Render("~/bundles/ajax")*@
+
+	<script>
+		function AjaxBegin() {
+			$('#results').html('');
+		}
+
+		function AjaxComplete() {
+			$('form').last()[0].reset();
+		}
+
+		$(document).ready(function () {
+			$('#CategoryId').on('change', function() {
+				$('#Name').val($(this).find('option:selected').text());
+			});
+		});
+	</script>
+}

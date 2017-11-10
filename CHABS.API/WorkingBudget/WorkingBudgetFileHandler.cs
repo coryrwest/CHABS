@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using CHABS.API.ExcelHelpers;
-using CRWestropp.Utilities.Extensions;
 
 namespace CHABS.API.WorkingBudget {
 	public class WorkingBudgetFileHandler {
@@ -76,7 +74,7 @@ namespace CHABS.API.WorkingBudget {
 			cell = cell.NextColumn();
 			string amount = data.Amount.ToString();
 			amount = Regex.Replace(amount, "[^+-.0-9]", "");
-			cell.Value = amount.ToDecimal();
+			cell.Value = Convert.ToDecimal(amount);
 			cell.Style.Numberformat.Format = "_($* #,##0.00_);_($* (#,##0.00);_($* \" - \"??_);_(@_)";
 			// Description
 			cell = cell.NextColumn();

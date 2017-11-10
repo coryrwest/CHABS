@@ -1,0 +1,20 @@
+﻿@model CHABS.Models.CategoryMatchesListViewModel
+
+<div class="col-md-12">
+	<div class="row">
+		<table class="table table-striped">
+			<tbody>
+				<tr>
+					<th>Name</th>
+					<th></th>
+				</tr>
+				@foreach (var match in Model.CurrentCategoryMatches) {
+					<tr>
+						<td>@match.Match</td>
+						<td><a class="btn btn-sm btn-warning" href="@Url.Action("DeleteCategoryMatch", new { id = match.Id, categoryId = match.CategoryId })">Delete</a></td>
+					</tr>
+				}
+			<tbody>
+		</table>
+	</div>
+</div>

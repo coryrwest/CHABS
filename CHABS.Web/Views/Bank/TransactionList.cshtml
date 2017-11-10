@@ -1,0 +1,63 @@
+﻿@using CHABS.Models
+@model CHABS.Models.TransactionsViewModel
+
+@section SecondaryNav {
+	@Html.Partial("_BankNavPartial")
+}
+
+<h2>@Model.RangeString</h2>
+<div class="row">
+    <div class="col-md-12">
+        @if (Model.Transations == null || Model.Transations.Count == 0) {
+            <div class="alert alert-info">You have no transactions</div>} else {
+            <table class="table table-striped" id="transactions">
+                <tbody>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                        <th>Source</th>
+                        <th>Category</th>
+                    </tr>
+                    @foreach (var transaction in Model.Transations) {
+                        <tr>
+                            <td>@transaction.Date.ToShortDateString()</td>
+                            <td>@string.Format("{0:C}", transaction.Amount)</td>
+                            <td>@transaction.Description</td>
+                            <td>@transaction.Source</td>
+                            <td>@transaction.Category</td>
+                        </tr>
+                    }
+                <tbody>
+            </table>}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="UpdateTransactions">
+            <button type="submit" class="btn btn-primary">Update Transactions</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+	@*@Scripts.Render("~/bundles/react-container")
+		@Scripts.Render("~/bundles/react-app")*@
+	@*@Scripts.Render("~/bundles/table")*@
+
+	<script>
+		$(document).ready(function () {
+			var editor = new $.fn.dataTable.Editor({
+				ajax: '/api/staff',
+				table: '#transactions',
+				fields: [
+					{ label: 'Date', name: 'date' },
+					{ label: 'Amount', name: 'amount' },
+					{ label: 'Description', name: 'description' },
+					{ label: 'Source', name: 'source' },
+					{ label: 'Category', name: 'category' }
+				]
+			});
+		});
+	</script>
+}

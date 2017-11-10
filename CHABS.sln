@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CHABS", "CHABS\CHABS.csproj", "{F95DEA13-E13B-4A8F-B8C5-4DDDADA8374A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CHABS.API", "CHABS.API\CHABS.API.csproj", "{6371A89C-32E4-4074-A3B2-7920D4B37799}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DropboxRestAPI", "DropboxRestAPI\DropboxRestAPI.csproj", "{FA69B792-FCFF-4CB1-8435-798112337306}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CHABS.Web", "CHABS.Web\CHABS.Web.csproj", "{BF583796-65E1-4006-8025-DFA3724C720C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CHABS.API", "CHABS.API\CHABS.API.csproj", "{E98AF63C-8467-4417-A00B-473F0388D7E8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRWestropp.Utilities", "crwestropp\CRWestropp.Utilities\CRWestropp.Utilities.csproj", "{007001DB-18FA-4DA2-8586-2B8655001F3E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CHABS.Job", "CHABS.Job\CHABS.Job.csproj", "{3D83CCAE-67A9-4535-AB57-DB8C18597169}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,24 +15,23 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F95DEA13-E13B-4A8F-B8C5-4DDDADA8374A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F95DEA13-E13B-4A8F-B8C5-4DDDADA8374A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F95DEA13-E13B-4A8F-B8C5-4DDDADA8374A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F95DEA13-E13B-4A8F-B8C5-4DDDADA8374A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FA69B792-FCFF-4CB1-8435-798112337306}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FA69B792-FCFF-4CB1-8435-798112337306}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FA69B792-FCFF-4CB1-8435-798112337306}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FA69B792-FCFF-4CB1-8435-798112337306}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E98AF63C-8467-4417-A00B-473F0388D7E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E98AF63C-8467-4417-A00B-473F0388D7E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E98AF63C-8467-4417-A00B-473F0388D7E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E98AF63C-8467-4417-A00B-473F0388D7E8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{007001DB-18FA-4DA2-8586-2B8655001F3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{007001DB-18FA-4DA2-8586-2B8655001F3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{007001DB-18FA-4DA2-8586-2B8655001F3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{007001DB-18FA-4DA2-8586-2B8655001F3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6371A89C-32E4-4074-A3B2-7920D4B37799}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6371A89C-32E4-4074-A3B2-7920D4B37799}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6371A89C-32E4-4074-A3B2-7920D4B37799}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6371A89C-32E4-4074-A3B2-7920D4B37799}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF583796-65E1-4006-8025-DFA3724C720C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF583796-65E1-4006-8025-DFA3724C720C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF583796-65E1-4006-8025-DFA3724C720C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF583796-65E1-4006-8025-DFA3724C720C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D83CCAE-67A9-4535-AB57-DB8C18597169}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D83CCAE-67A9-4535-AB57-DB8C18597169}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D83CCAE-67A9-4535-AB57-DB8C18597169}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D83CCAE-67A9-4535-AB57-DB8C18597169}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D3F8229B-BC1F-46CD-9C52-456A256A1650}
 	EndGlobalSection
 EndGlobal

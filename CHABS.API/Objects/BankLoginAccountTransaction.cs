@@ -8,10 +8,10 @@ namespace CHABS.API.Objects {
 		public decimal Amount { get; set; }
 		public DateTime Date { get; set; }
 		public string Category { get; set; }
-		/// <summary>
-		/// Name of the Account that this transaction came from.
-		/// </summary>
-		public string Source { get; set; }
+        /// <summary>
+        /// Name of the Account that this transaction came from.
+        /// </summary>
+        public string Source { get; set; }
 
 		public Guid LoginId { get; set; }
 		public string ServiceId { get; set; }
