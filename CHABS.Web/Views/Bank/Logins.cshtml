@@ -11,7 +11,37 @@
 <h2>@ViewBag.Title</h2>
 <div class="row">
 	<div class="col-md-12" id="results">
-		@Html.Partial("LoginListPartial", new LoginListViewModel(Model.CurrentLogins))
+	    <h3>Current Logins</h3>
+	    <div class="col-md-12">
+	        <table class="table table-striped">
+	            <tbody>
+	            <tr>
+	                <th>Name</th>
+	                <th></th>
+	                <th></th>
+                    <th></th>
+                    <th></th>
+	            </tr>
+	            @foreach (var login in Model.CurrentLogins) {
+	                <tr>
+	                    <td>@login.Name</td>
+	                    <td><a class="btn btn-sm btn-warning" href="@Url.Action("DeleteLogin", new { login.Id })">Delete</a></td>
+	                    @if (string.IsNullOrEmpty(login.AccessToken)) {
+	                        <td><a class="btn btn-sm btn-info" href="#">Connect</a></td>
+	                        <td></td>
+	                        <th></th>
+	                    } else {
+	                        <td><a class="btn btn-sm btn-info disabled">Connected</a></td>
+	                        <td><a class="btn btn-sm btn-default" href="@Url.Action("AccountList", new { loginId = login.Id })">Accounts</a></td>
+                            if (!string.IsNullOrEmpty(login.PublicToken)) {
+                                <td><button class="btn btn-sm btn-default update-link" data-id="@login.PublicToken" data-login="@login.Id">Update Link</button></td>
+                            }
+                        }
+	                </tr>
+	            }
+	            <tbody>
+	        </table>
+	    </div>
 	</div>
 </div>
 <hr />
@@ -29,7 +59,7 @@
 	                </div>
 	            </div>
 	        </form>
-	        <button id="link-button">Link Account</button>
+	        <button class="btn btn-sm btn-info" id="link-button">Link Account</button>
 	    </div>
 	</div>
 </div>
@@ -39,33 +69,48 @@
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
 
 	<script>
-		function AjaxBegin() {
-			$('#results').html('');
-		}
+	    function AjaxBegin() {
+	        $('#results').html('');
+	    }
 
-		function AjaxComplete() {
-		}
+	    function AjaxComplete() {
+	    }
 
-		$(document).ready(function () {
-			$('#plaid-link-button').addClass('btn');
-			$('#plaid-link-button').addClass('btn-default');
-		});
-
-		function deleteClick() {
-			var id = $(this).attr('id');
-			$.ajax({
-				url: "@Url.Action("DeleteLogin")" + "?loginId=" + id,
-				success: function (data) {
-					$('#results').html(data);
-				}
-			});
-		}
-
-		$(document).on('click', '.delete-account', deleteClick);
+	    $(document).ready(function () {
+	        $('#plaid-link-button').addClass('btn');
+	        $('#plaid-link-button').addClass('btn-default');
+	    });
 	</script>
-    
     <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
     <script type="text/javascript">
+        function InitializeLinkUpdate(token, loginId) {
+            var linkUpdate = Plaid.create({
+                clientName: 'CHABS',
+                env: '@Model.PlaidEnv',
+                apiVersion: 'v2',
+                product: ['transactions'],
+                key: '2865c40255320ca75297455cc9adac',
+                token: token,
+                onSuccess: function (public_token, metadata) {
+                    // Send the public_token to your app server.
+                    // The metadata object contains info about the institution the
+                    // user selected and the account ID, if `selectAccount` is enabled.
+                    $.post('@Url.Action("UpdateLogin", "Bank")', {
+                        public_token: public_token,
+                        login_id: loginId
+                    });
+                }
+            });
+            linkUpdate.open();
+        }
+
+        // Trigger the login view for the institution associated with the public_token
+        $('.update-link').on('click', function (e) {
+            var token = $(this).data('id');
+            var loginId = $(this).data('login');
+            InitializeLinkUpdate(token, loginId);
+        });
+
         (function($) {
             var handler = Plaid.create({
                 clientName: 'CHABS',

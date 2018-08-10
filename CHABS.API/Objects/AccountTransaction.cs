@@ -3,7 +3,7 @@ using Dapper;
 
 namespace CHABS.API.Objects {
 	[Table("transactions")]
-	public class BankLoginAccountTransaction : DataObject {
+	public class AccountTransaction : DataObject {
 		public string Description { get; set; }
 		public decimal Amount { get; set; }
 		public DateTime Date { get; set; }

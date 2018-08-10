@@ -5,9 +5,9 @@ using CHABS.API.Objects;
 
 namespace CHABS.API.Services {
 	public interface IBankDataService {
-		string AuthenticateBankUser(PlaidOptions options, BankDataServiceOptions serviceOptions, out List<BankLoginAccount> BankList);
-		List<BankLoginAccountTransaction> GetRecentTransactions(PlaidOptions options, string token, DateTime start, DateTime end);
-		List<BankLoginAccount> GetAccounts(PlaidOptions options, Guid loginId, string token);
+		string AuthenticateBankUser(PlaidOptions options, BankDataServiceOptions serviceOptions, out List<BankAccount> BankList);
+		List<AccountTransaction> GetRecentTransactions(PlaidOptions options, string token, DateTime start, DateTime end);
+		List<BankAccount> GetAccounts(PlaidOptions options, Guid loginId, string token);
 
 		/// <summary>
 		/// Will exchange a public token from plaid link to an access token

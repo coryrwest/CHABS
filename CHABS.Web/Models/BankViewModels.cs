@@ -12,26 +12,26 @@ namespace CHABS.Models {
 	    public SelectList InstitutionList { get; set; }
 	    public string PlaidEnv { get; set; }
 
-        public List<BankLogin> CurrentLogins { get; set; }
+        public List<BankConnection> CurrentLogins { get; set; }
 	}
 
 	public class LoginListViewModel {
-		public LoginListViewModel(List<BankLogin> currentLogins) {
+		public LoginListViewModel(List<BankConnection> currentLogins) {
 			CurrentLogins = currentLogins;
 		}
 
-		public List<BankLogin> CurrentLogins { get; set; }
+		public List<BankConnection> CurrentLogins { get; set; }
 	}
 
 	public class ConnectLoginViewModel {
-		public BankLogin Login { get; set; }
+		public BankConnection Connection { get; set; }
 		public Guid LoginId { get; set; }
 		public string Username { get; set; }
 		public string Password { get; set; }
 	}
 
 	public class AccountListViewModel {
-		public List<BankLoginAccount> Accounts { get; set; }
+		public List<BankAccount> Accounts { get; set; }
 		public string LoginName { get; set; }
 	}
 
@@ -47,7 +47,7 @@ namespace CHABS.Models {
 		public string RangeString { get; set; }
 
 		public List<Guid> Logins { get; set; }
-		public List<BankLoginAccountTransaction> Transations { get; set; }
+		public List<AccountTransaction> Transations { get; set; }
 	}
 
 	public class CategoriesViewModel {

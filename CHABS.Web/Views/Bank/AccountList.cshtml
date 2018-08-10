@@ -9,15 +9,35 @@
 	<table class="table table-striped">
 		<tbody>
 			<tr>
-				<th>Name</th>
+			    <th>Name</th>
+			    <th>Display Name</th>
 				<th>Show in transaction list?</th>
 				<th></th>
 			</tr>
 			@foreach (var account in Model.Accounts) {
 				<tr>
 					<td>@account.Name</td>
-					<td>@account.Shown</td>
-					<td><a class="btn btn-sm btn-info" href="@Url.Action("ToggleAccount", new { accountId = account.Id, loginId = account.LoginId })">Toggle</a></td>
+				    <td>@account.DisplayName</td>
+				    <td>@account.Shown</td>
+				    <td>
+				        <a class="btn btn-sm btn-info" href="@Url.Action("ToggleAccount", new {accountId = account.Id, loginId = account.LoginId})">Toggle</a>
+
+				        <a class="btn btn-sm btn-info" data-toggle="modal" data-target="#@account.Id-image">Edit</a>
+				        <div class="modal fade" id="@account.Id-image" tabindex="-1" role="dialog">
+				            <div class="modal-dialog" role="document">
+				                <div class="modal-content">
+				                    <div class="modal-header">
+				                    </div>
+				                    <div class="modal-body">
+				                        @Html.Partial("_BankAccountEdit", account)
+				                    </div>
+				                    <div class="modal-footer">
+				                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				                    </div>
+				                </div>
+				            </div>
+				        </div>
+				    </td>
 				</tr>
 			}
 		<tbody>

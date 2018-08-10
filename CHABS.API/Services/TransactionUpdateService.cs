@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using CHABS.API.Objects;
+using CHABS.API.Services.DataServices;
 
 namespace CHABS.API.Services {
 	public static class TransactionUpdateService {
-		public class Options {
-			public IBankDataService BankService { get; set; }
-			public BankAccountService DataService { get; set; }
+		public class ExecutionContext {
 			public List<Guid> LoginIds { get; set; }
 			public Guid UserId { get; set; }
+			public DataService Services { get; set; }
+			public IBankDataService BankService { get; set; }
 
-			public Options(IBankDataService bankService, BankAccountService dataService, List<Guid> loginIds, Guid userId) {
-				BankService = bankService;
-				DataService = dataService;
+			public ExecutionContext(List<Guid> loginIds, Guid userId, DataService services, IBankDataService bankService) {
 				LoginIds = loginIds;
 				UserId = userId;
+				Services = services;
 			}
 		}
 
@@ -22,37 +22,37 @@ namespace CHABS.API.Services {
 		/// Will get transactions from the bank service, check existing,
 		/// map categories, and save to the database.
 		/// </summary>
-		public static void DoTransactionUpdate(PlaidOptions options, Options methodOptions) {
+		public static void DoTransactionUpdate(PlaidOptions options, ExecutionContext methodOptions, DateTime start, DateTime end) {
 			// Loop through the login ids
 			foreach (Guid loginId in methodOptions.LoginIds) {
-				ProcessLogin(options, loginId, methodOptions);
+				ProcessLogin(options, loginId, methodOptions, start, end);
 			}
 		}
 
-		private static void ProcessLogin(PlaidOptions options, Guid loginId, Options methodOptions) {
-			var login = methodOptions.DataService.Logins.GetById(loginId);
+		private static void ProcessLogin(PlaidOptions options, Guid loginId, ExecutionContext methodOptions, DateTime start, DateTime end) {
+			var login = methodOptions.Services.BankConnections.GetById(loginId);
 			if (login.AccessToken != null) {
-				var transactions = methodOptions.BankService.GetRecentTransactions(options, login.AccessToken, DateTime.Now.FirstDay(), DateTime.Now.LastDay());
+				var transactions = methodOptions.BankService.GetRecentTransactions(options, login.AccessToken, start, end);
 				ProcessTransactions(transactions, login, methodOptions);
 			}
 		}
 
-		private static void ProcessTransactions(List<BankLoginAccountTransaction> transactions, BankLogin login, Options options) {
-			foreach (BankLoginAccountTransaction transaction in transactions) {
-				transaction.LoginId = login.Id;
+		private static void ProcessTransactions(List<AccountTransaction> transactions, BankConnection connection, ExecutionContext options) {
+			foreach (AccountTransaction transaction in transactions) {
+				transaction.LoginId = connection.Id;
 				// Check existing
-				var existing = options.DataService.Transactions.GetSingle(new { serviceid = transaction.ServiceId });
+				var existing = options.Services.AccountTransactions.GetSingle("serviceid = @serviceid", new { serviceid = transaction.ServiceId });
 				if (existing == null) {
 					// Get the source name
-					var source = options.DataService.Accounts.GetSingle(new { serviceid = transaction.ServiceAccountId });
-					transaction.Source = source.Name;
+					var source = options.Services.BankAccounts.GetSingle("serviceid = @serviceid", new { serviceid = transaction.ServiceAccountId });
+					transaction.Source = source.DisplayName;
 					// Map categories
-					var category = options.DataService.Categories.FindCategoryMatch(transaction.Description);
+					var category = options.Services.Categories.FindCategoryMatch(transaction.Description);
 					if (category != null) {
 						transaction.Category = category.Name;
 					}
 					// Save if a new transaction
-					options.DataService.Transactions.Upsert(transaction);
+					options.Services.AccountTransactions.Upsert(transaction);
 				}
 			}
 		}

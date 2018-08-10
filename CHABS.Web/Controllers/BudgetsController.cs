@@ -1,72 +1,74 @@
 using System;
 using CHABS.API.Objects;
 using CHABS.API.Services;
+using CHABS.API.Services.DataServices;
 using CHABS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CHABS.Controllers {
 	public class BudgetsController : BaseController {
-		private readonly BankAccountService Service;
+		private readonly DataService Services;
 
 		public BudgetsController() {
-			Service = new BankAccountService(AppSession);
+			Services = new DataService(AppSession);
 		}
 
 		public ActionResult Index() {
-			var budgets = Service.Budgets.GetAllForHousehold(true);
-			var categories = Service.Categories.GetAllForHousehold(true);
+			var budgets = Services.Budgets.GetAllForHousehold(true);
+			var categories = Services.Categories.GetAllForHousehold(true);
 			var model = new BudgetViewModel();
 			model.CurrentBudgets = budgets;
 			model.Categories = new SelectList(categories, "Id", "Name");
 			return View(model);
 		}
 
-		//[HttpPost]
-		//public ActionResult Index(BudgetViewModel model) {
-		//	var budget = new Budget();
-		//	model.CopyProperties(budget);
-		//	budget.HouseholdId = GetHouseholdIdForCurrentUser();
-		//	Service.Budgets.Upsert(budget);
-		//	// Save the map
-		//	var map = new BudgetCategoryMap();
-		//	map.BudgetId = budget.Id;
-		//	map.CategoryId = model.CategoryId;
-		//	Service.BudgetCategoryMaps.Upsert(map);
+		[HttpPost]
+		public ActionResult Index(BudgetViewModel model) {
+			var budget = new Budget();
+			budget.Name = model.Name;
+			budget.Amount = model.Amount;
+			budget.HouseholdId = GetHouseholdIdForCurrentUser();
+			Services.Budgets.Upsert(budget);
+			// Save the map
+			var map = new BudgetCategoryMap();
+			map.BudgetId = budget.Id;
+			map.CategoryId = model.CategoryId;
+			Services.BudgetCategoryMaps.Upsert(map);
 
-		//	model.CurrentBudgets = Service.Budgets.GetAllForHousehold(true);
-		//	var categories = Service.Categories.GetAllForHousehold(true);
-		//	model.Categories = new SelectList(categories, "Name", "Name");
-		//	return PartialView("BudgetListPartial", new BudgetListViewModel(model.CurrentBudgets));
-		//}
+			model.CurrentBudgets = Services.Budgets.GetAllForHousehold(true);
+			var categories = Services.Categories.GetAllForHousehold(true);
+			model.Categories = new SelectList(categories, "Name", "Name");
+			return PartialView("BudgetListPartial", new BudgetListViewModel(model.CurrentBudgets));
+		}
 
 		public ActionResult EditBudget(Guid id) {
-			var budget = Service.Budgets.GetById(id);
+			var budget = Services.Budgets.GetById(id);
 			return View(budget);
 		}
 
 		[HttpPost]
 		public ActionResult EditBudget(Budget budget) {
 			budget.IsNew = false;
-			Service.Budgets.Upsert(budget);
+			Services.Budgets.Upsert(budget);
 			return RedirectToAction("Index");
 		}
 
 		public ActionResult DeleteBudget(Guid id) {
-			var budget = Service.Budgets.GetById(id);
-			Service.Budgets.DeleteObject(budget);
+			var budget = Services.Budgets.GetById(id);
+			Services.Budgets.DeleteObject(budget);
 			return RedirectToAction("Index");
 		}
 
 		public ActionResult RestoreBudget(Guid id) {
-			Service.Budgets.Restore(id);
+			Services.Budgets.Restore(id);
 			return RedirectToAction("Index");
 		}
 
 		#region Budget Categories
 		public ActionResult Categories(Guid id) {
-			var categories = Service.Categories.GetAllForBudget(id);
-			var allCategories = Service.Categories.GetAllForHousehold();
+			var categories = Services.Categories.GetAllForBudget(id);
+			var allCategories = Services.Categories.GetAllForHousehold();
 			var model = new BudgetCategoryViewModel();
 			model.CurrentBudgetCategorys = categories;
 			model.BudgetId = id;
@@ -79,15 +81,14 @@ namespace CHABS.Controllers {
 			var map = new BudgetCategoryMap();
 			map.BudgetId = model.BudgetId;
 			map.CategoryId = model.CategoryId;
-			Service.BudgetCategoryMaps.Upsert(map);
+			Services.BudgetCategoryMaps.Upsert(map);
 
-			var categories = Service.Categories.GetAllForBudget(model.BudgetId);
+			var categories = Services.Categories.GetAllForBudget(model.BudgetId);
 			return PartialView("BudgetCategoryListPartial", new BudgetCategoryListViewModel(categories));
 		}
 
 		public ActionResult RemoveCategory(Guid id, Guid budgetId) {
-			var budgetCategory = Service.BudgetCategoryMaps.GetSingle(new {categoryid = id, budgetid = budgetId});
-			Service.BudgetCategoryMaps.DeleteObject(budgetCategory);
+			Services.BudgetCategoryMaps.DeleteMap(id, budgetId);
 			return RedirectToAction("Index");
 		}
 		#endregion

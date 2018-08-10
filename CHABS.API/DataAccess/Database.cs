@@ -42,25 +42,12 @@ namespace CHABS.API.DataAccess {
 				}
 				return dataObj;
 			}
-		}
+	    }
 
-		public List<T> GetList<T>(dynamic whereClause) where T : DataObject {
+        public IEnumerable<T> GetList<T>(string whereClause, object parameters) where T : DataObject {
 			using (connection = new NpgsqlConnection(connectionString)) {
-				var poco = Activator.CreateInstance<T>();
-                // TODO: Get rid of this shit
-				string where = BuildWhere(Dyn2Dict(whereClause), poco);
-				var list = new List<T>();
-				list = connection.GetList<T>(where, (object)whereClause).ToList();
-				list.ForEach(l => l.IsNew = false);
-				return list;
-			}
-		}
-
-		public List<T> GetList<T>(string whereClause) where T : DataObject {
-			using (connection = new NpgsqlConnection(connectionString)) {
-				var list = new List<T>();
-				list = connection.GetList<T>(whereClause).ToList();
-				list.ForEach(l => l.IsNew = false);
+				IEnumerable<T> list = Query<T>(whereClause, parameters);
+				list.ToList().ForEach(l => l.IsNew = false);
 				return list;
 			}
 		}
@@ -120,19 +107,25 @@ namespace CHABS.API.DataAccess {
 			return result;
 		}
 
-		///// <summary>
-		///// Query the database for raw data. No DataObject wrapping.
-		///// </summary>
-		///// <typeparam name="T"></typeparam>
-		///// <param name="sql"></param>
-		///// <param name="parameters"></param>
-		///// <returns></returns>
-		//public T RawQuery<T>(string sql, object parameters) {
-		//	using (connection = new NpgsqlConnection(connectionString)) {
-		//		var results = connection.Query<T>(sql, parameters);
-		//		return results;
-		//	}
-		//}
+		/// <summary>
+		/// Query the database for raw data. No DataObject wrapping.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="sql"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public IEnumerable<T> RawQuery<T>(string sql, object parameters) {
+			using (connection = new NpgsqlConnection(connectionString)) {
+				var results = connection.Query<T>(sql, parameters);
+				return results;
+			}
+		}
+		public int RawExecute(string sql, object parameters) {
+			using (connection = new NpgsqlConnection(connectionString)) {
+				var results = connection.Execute(sql, parameters);
+				return results;
+			}
+		}
 
 		public void Close() {
 			connection.Close();
@@ -143,7 +136,7 @@ namespace CHABS.API.DataAccess {
 		}
 
         #region Helpers
-	    public Dictionary<String, Object> Dyn2Dict(dynamic dynObj) {
+	    public static Dictionary<string, object> Dyn2Dict(dynamic dynObj) {
 	        var dictionary = new Dictionary<string, object>();
 	        foreach (PropertyDescriptor propertyDescriptor in TypeDescriptor.GetProperties(dynObj)) {
 	            object obj = propertyDescriptor.GetValue(dynObj);

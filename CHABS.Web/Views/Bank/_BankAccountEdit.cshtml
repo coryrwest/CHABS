@@ -1,0 +1,61 @@
+﻿@model CHABS.API.Objects.BankLoginAccount
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditBankLoginAccount" 
+              data-ajax-begin="onBegin" data-ajax-complete="onComplete"
+              data-ajax-failure="onFailed" data-ajax-success="onSuccess"
+              data-ajax="true" data-ajax-method="POST">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input type="hidden" asp-for="LoginId" class="form-control" />
+                <input type="hidden" asp-for="ServiceId" class="form-control" />
+                <input type="hidden" asp-for="Id" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DisplayName" class="control-label"></label>
+                <input asp-for="DisplayName" class="form-control" />
+                <span asp-validation-for="DisplayName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Shown" /> @Html.DisplayNameFor(model => model.Shown)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+            <div id="Results"></div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        var results = $("#Results");
+        var onBegin = function(){
+            results.html("Loading...");
+        };
+
+        var onComplete = function(){
+            results.html("");
+        };
+
+        var onSuccess = function(context){
+            alert(context.message);
+        };
+
+        var onFailed = function(context){
+            alert("Failed");
+        };
+    </script>
+}

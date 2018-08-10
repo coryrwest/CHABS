@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CHABS.API", "CHABS.API\CHAB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CHABS.Web", "CHABS.Web\CHABS.Web.csproj", "{BF583796-65E1-4006-8025-DFA3724C720C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CHABS.Job", "CHABS.Job\CHABS.Job.csproj", "{3D83CCAE-67A9-4535-AB57-DB8C18597169}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CHABS.Worker", "CHABS.Worker\CHABS.Worker.csproj", "{1F024B0E-CA21-4816-99EA-32F8F1371CEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{BF583796-65E1-4006-8025-DFA3724C720C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF583796-65E1-4006-8025-DFA3724C720C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF583796-65E1-4006-8025-DFA3724C720C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3D83CCAE-67A9-4535-AB57-DB8C18597169}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D83CCAE-67A9-4535-AB57-DB8C18597169}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D83CCAE-67A9-4535-AB57-DB8C18597169}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D83CCAE-67A9-4535-AB57-DB8C18597169}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F024B0E-CA21-4816-99EA-32F8F1371CEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F024B0E-CA21-4816-99EA-32F8F1371CEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F024B0E-CA21-4816-99EA-32F8F1371CEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F024B0E-CA21-4816-99EA-32F8F1371CEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -42,7 +42,7 @@ namespace CHABS.API.Services {
 		/// </summary>
 		/// <returns></returns>
 		public List<Guid> GetUserIdsForHousehold(Guid householdId) {
-			var households = db.GetList<HouseholdUserMap>(new { HouseholdId = householdId }).ToList();
+			var households = db.GetList<HouseholdUserMap>("HouseholdId = @householdid", new {HouseholdId = householdId});
 			var users = households.Select(h => h.UserId).ToList();
 			return users;
 		}

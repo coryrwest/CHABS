@@ -104,6 +104,20 @@ namespace CHABS.API {
 	        return string.Join(separator,
 	            list.Select(item => string.Format(formatString, item)));
 	    }
+
+	    public static string InsertBefore(this string str, string insert, object[] stringsToCheck) {
+	        var lastIndex = 0;
+            foreach (string check in stringsToCheck) {
+                if (lastIndex == 0) {
+                    lastIndex = str.IndexOf(check, StringComparison.Ordinal);
+                }
+	        }
+
+	        var firstPart = str.Substring(0, lastIndex);
+	        var lastPart = str.Substring(lastIndex, str.Length - lastIndex);
+
+	        return firstPart + insert + lastPart;
+	    }
     }
 
 }
