@@ -15,6 +15,7 @@ namespace CHABS.API.Services {
 				LoginIds = loginIds;
 				UserId = userId;
 				Services = services;
+				BankService = bankService;
 			}
 		}
 
@@ -41,7 +42,7 @@ namespace CHABS.API.Services {
 			foreach (AccountTransaction transaction in transactions) {
 				transaction.LoginId = connection.Id;
 				// Check existing
-				var existing = options.Services.AccountTransactions.GetSingle("serviceid = @serviceid", new { serviceid = transaction.ServiceId });
+				var existing = options.Services.AccountTransactions.GetSingle("serviceid = @serviceid", new { serviceid = transaction.ServiceId }, true);
 				if (existing == null) {
 					// Get the source name
 					var source = options.Services.BankAccounts.GetSingle("serviceid = @serviceid", new { serviceid = transaction.ServiceAccountId });
@@ -52,7 +53,12 @@ namespace CHABS.API.Services {
 						transaction.Category = category.Name;
 					}
 					// Save if a new transaction
-					options.Services.AccountTransactions.Upsert(transaction);
+					try {
+						options.Services.AccountTransactions.Upsert(transaction);
+					}
+					catch (Exception ex) {
+						throw new Exception($"Error with transaction {transaction.ServiceId}, {transaction.Description}. {ex.Message}", ex);
+					}
 				}
 			}
 		}

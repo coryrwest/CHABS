@@ -66,19 +66,19 @@ namespace CHABS.Controllers {
 			return PartialView("CategoryListPartial", new CategoriesListViewModel(model.CurrentCategories));
 		}
 
-		public ActionResult EditCategory(Guid id) {
+		public ActionResult Edit(Guid id) {
 			var category = Services.Categories.GetById(id);
 			return View(category);
 		}
 
 		[HttpPost]
-		public ActionResult EditCategory(Category category) {
+		public ActionResult Edit(Category category) {
 			category.IsNew = false;
 			Services.Categories.Upsert(category);
 			return RedirectToAction(nameof(Index));
 		}
 
-		public ActionResult ToggleCategory(Guid id) {
+		public ActionResult Toggle(Guid id) {
 			// Toggle the account
 			var category = Services.Categories.GetById(id);
 			category.Excluded = !category.Excluded;
@@ -87,12 +87,12 @@ namespace CHABS.Controllers {
 			return RedirectToAction(nameof(Index));
 		}
 
-		public ActionResult DeleteCategory(Guid id) {
+		public ActionResult Delete(Guid id) {
 			Services.Categories.Delete(id);
 			return RedirectToAction(nameof(Index));
 		}
 
-		public ActionResult RestoreCategory(Guid id) {
+		public ActionResult Restore(Guid id) {
 			Services.Categories.Restore(id);
 			return RedirectToAction(nameof(Index));
 		}

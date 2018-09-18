@@ -791,7 +791,7 @@ namespace Dapper
         //For Get(id) and Delete(id) we don't have an entity, just the type so this method is used
         //Use dynamic type to be able to handle both our Table-attribute and the DataAnnotation
         //Uses class name by default and overrides if the class has a Table attribute
-        private static string GetTableName(Type type)
+        public static string GetTableName(Type type)
         {
             //var tableName = String.Format("[{0}]", type.Name);
             var tableName = Encapsulate(type.Name);

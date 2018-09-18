@@ -9,5 +9,8 @@ namespace CHABS.API.Objects {
 	    public string DisplayName { get; set; }
 		public string ServiceId { get; set; }
 		public bool Shown { get; set; }
+		public string Mask { get; set; }
+		public string Type { get; set; }
+		public string SubType { get; set; }
 	}
 }

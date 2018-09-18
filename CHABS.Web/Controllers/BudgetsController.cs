@@ -1,16 +1,38 @@
 using System;
+using CHABS.API;
 using CHABS.API.Objects;
 using CHABS.API.Services;
 using CHABS.API.Services.DataServices;
 using CHABS.Models;
+using CHABS.Web;
+using CHABS.Web.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace CHABS.Controllers {
 	public class BudgetsController : BaseController {
 		private readonly DataService Services;
 
-		public BudgetsController() {
+		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly SignInManager<ApplicationUser> _signInManager;
+		private readonly ILogger _logger;
+		private readonly ConnectionStrings _connStrings;
+
+		public BudgetsController(
+			UserManager<ApplicationUser> userManager,
+			SignInManager<ApplicationUser> signInManager,
+			IOptions<ConnectionStrings> connStrings,
+			ILogger<BankController> logger) {
+			_userManager = userManager;
+			_signInManager = signInManager;
+			_logger = logger;
+			_connStrings = connStrings.Value;
+
+			AppSession.ConnectionString = _connStrings.DefaultConnection;
+
 			Services = new DataService(AppSession);
 		}
 

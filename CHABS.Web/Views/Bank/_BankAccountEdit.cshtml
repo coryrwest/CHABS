@@ -1,4 +1,4 @@
-﻿@model CHABS.API.Objects.BankLoginAccount
+﻿@model CHABS.API.Objects.BankAccount
 
 <div class="row">
     <div class="col-md-4">
@@ -8,8 +8,6 @@
               data-ajax="true" data-ajax-method="POST">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <input type="hidden" asp-for="LoginId" class="form-control" />
-                <input type="hidden" asp-for="ServiceId" class="form-control" />
                 <input type="hidden" asp-for="Id" class="form-control" />
             </div>
             <div class="form-group">
@@ -36,26 +34,3 @@
         </form>
     </div>
 </div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    
-    <script>
-        var results = $("#Results");
-        var onBegin = function(){
-            results.html("Loading...");
-        };
-
-        var onComplete = function(){
-            results.html("");
-        };
-
-        var onSuccess = function(context){
-            alert(context.message);
-        };
-
-        var onFailed = function(context){
-            alert("Failed");
-        };
-    </script>
-}

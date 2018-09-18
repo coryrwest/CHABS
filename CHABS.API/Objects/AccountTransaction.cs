@@ -20,6 +20,11 @@ namespace CHABS.API.Objects {
 		/// </summary>
 		public string ServiceAccountId { get; set; }
 
+		/// <summary>
+		/// ID that related another object to this object. NOT another transaction.
+		/// </summary>
+		public Guid RelatedID { get; set; }
+
 		public bool Custom { get; set; }
 		public CustomTransactionType CustomType { get; set; }
 

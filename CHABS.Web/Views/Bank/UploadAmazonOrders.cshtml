@@ -1,0 +1,37 @@
+﻿@using CHABS.Controllers
+@using CHABS.Models
+@model CHABS.Models.UploadAmazonTransactionsViewModel
+@{
+	ViewBag.Title = "Upload Orders";
+}
+
+@section SecondaryNav {
+    @Html.Partial("_BankNavPartial")
+}
+
+<h2>@ViewBag.Title</h2>
+<div class="row">
+    <div class="col-md-12" id="results">
+        <h3>Upload Amazon Orders</h3>
+
+        <p><a href="https://www.amazon.com/gp/b2b/reports">https://www.amazon.com/gp/b2b/reports</a></p>
+
+        <p>Download <b>Items</b> for the <b>Last 30 Days</b>. Upload may take a while.</p>
+
+        <div class="col-md-12">
+            <form asp-action="UploadAmazonOrders" enctype="multipart/form-data" data-method="post" class="form-horizontal">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Orders" class="control-label"></label>
+                    <input type="file" id="Orders" name="Orders" class="form-control" />
+                    <span asp-validation-for="Orders" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-sm btn-info">Upload Orders</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

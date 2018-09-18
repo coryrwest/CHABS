@@ -108,8 +108,11 @@ namespace CHABS.API.Services {
                     LoginId = loginId,
                     Name = account["name"].ToString(),
                     ServiceId = account["account_id"].ToString(),
-                    Shown = true
-                });
+                    Shown = true,
+	                Mask = account["mask"].ToString(),
+	                Type = account["type"].ToString(),
+	                SubType = account["subtype"].ToString()
+				});
             }
 
             return accountList;

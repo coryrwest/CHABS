@@ -16,17 +16,17 @@
 					<tr>
 						<td class="@(category.Deleted ? "deleted" : "")">@category.Name</td>
 						<td>@Html.Raw(category.Excluded ? "<span class='glyphicon glyphicon-ok text-success'></span>" : "")</td>
-						<td><a class="btn btn-xs btn-info" href="@Url.Action("ToggleCategory", new { id = category.Id })">Toggle</a></td>
-						<td><a class="btn btn-xs btn-default" href="@Url.Action("CategoryMatches", new { id = category.Id })">Matches</a></td>
+						<td><a class="btn btn-xs btn-info" href="@Url.Action("Toggle", new { id = category.Id })">Toggle</a></td>
+						<td><a class="btn btn-xs btn-default" href="@Url.Action("Matches", new { id = category.Id })">Matches</a></td>
 						<td>
 							@if (category.Deleted) {
-								<a class="btn btn-xs btn-warning" href="@Url.Action("RestoreCategory", new {id = category.Id})">Restore</a>
+								<a class="btn btn-xs btn-warning" href="@Url.Action("Restore", new {id = category.Id})">Restore</a>
 							} else {
-								<a class="btn btn-xs btn-warning" href="@Url.Action("DeleteCategory", new { id = category.Id })">Delete</a>
+								<a class="btn btn-xs btn-warning" href="@Url.Action("Delete", new { id = category.Id })">Delete</a>
 							}
 						</td>
 						<td>
-							<a class="btn btn-xs btn-info" href="@Url.Action("EditCategory", new { id = category.Id })">Edit</a>
+							<a class="btn btn-xs btn-info" href="@Url.Action("Edit", new { id = category.Id })">Edit</a>
 						</td>
 					</tr>
 				}

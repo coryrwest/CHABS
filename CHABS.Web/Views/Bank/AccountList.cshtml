@@ -8,38 +8,67 @@
 <div class="col-md-12">
 	<table class="table table-striped">
 		<tbody>
-			<tr>
-			    <th>Name</th>
-			    <th>Display Name</th>
-				<th>Show in transaction list?</th>
-				<th></th>
-			</tr>
+            <tr>
+                <th>Name</th>
+                <th>Acc. #</th>
+                <th>Display Name</th>
+                <th>Show in transaction list?</th>
+                <th></th>
+            </tr>
 			@foreach (var account in Model.Accounts) {
-				<tr>
-					<td>@account.Name</td>
-				    <td>@account.DisplayName</td>
-				    <td>@account.Shown</td>
-				    <td>
-				        <a class="btn btn-sm btn-info" href="@Url.Action("ToggleAccount", new {accountId = account.Id, loginId = account.LoginId})">Toggle</a>
+            <tr>
+                <td>@account.Name</td>
+                <td>@account.Mask</td>
+                <td>@account.DisplayName</td>
+                <td>@account.Shown</td>
+                <td>
+                    <a class="btn btn-sm btn-default" href="@Url.Action("ToggleAccount", new {accountId = account.Id, loginId = account.LoginId})">Toggle</a>
 
-				        <a class="btn btn-sm btn-info" data-toggle="modal" data-target="#@account.Id-image">Edit</a>
-				        <div class="modal fade" id="@account.Id-image" tabindex="-1" role="dialog">
-				            <div class="modal-dialog" role="document">
-				                <div class="modal-content">
-				                    <div class="modal-header">
-				                    </div>
-				                    <div class="modal-body">
-				                        @Html.Partial("_BankAccountEdit", account)
-				                    </div>
-				                    <div class="modal-footer">
-				                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-				                    </div>
-				                </div>
-				            </div>
-				        </div>
-				    </td>
-				</tr>
+                    <a class="btn btn-sm btn-info" data-toggle="modal" data-target="#@account.Id">Edit</a>
+                    <div class="modal fade" id="@account.Id" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                </div>
+                                <div class="modal-body">
+                                    @Html.Partial("_BankAccountEdit", account)
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
 			}
 		<tbody>
 	</table>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        var results = $("#Results");
+        var onBegin = function() {
+            results.html("Loading...");
+        };
+
+        var onComplete = function() {
+            results.html("");
+        };
+
+        var onSuccess = function(context) {
+            results.html(context.message);
+            setTimeout(function() {
+                $('.modal').modal('hide');
+            }, 1000);
+        };
+
+        var onFailed = function(context) {
+            alert("Failed");
+        };
+    </script>
+}
+

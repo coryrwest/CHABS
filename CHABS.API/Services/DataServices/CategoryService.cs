@@ -11,7 +11,7 @@ namespace CHABS.API.Services.DataServices
 		}
 
 		public IEnumerable<Category> GetAll(bool includeDeleted = false) {
-			return GetList("where householdid = '{0}' order by sort, deleted", new { householdid = Session.HouseholdId }, includeDeleted);
+			return GetList("householdid = @householdid order by sort, deleted", new { householdid = Session.HouseholdId }, includeDeleted);
 		}
 
 		public List<Category> GetAllForBudget(Guid budgetId, bool includeDeleted = false) {

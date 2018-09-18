@@ -75,7 +75,7 @@ namespace CHABS.API.Services {
 		}
 
 		public virtual List<T> GetAllForHousehold(bool includeDeleted = false) {
-			var items = GetList("householdid = ", includeDeleted).ToList();
+			var items = GetList("householdid = @householdid", new { householdid = Session.HouseholdId }, includeDeleted).ToList();
 			return items;
 		} 
 
@@ -102,6 +102,9 @@ namespace CHABS.API.Services {
 			if (id == Guid.Empty) { return null; }
 
 			T item = db.GetById<T>(id);
+			if (item == null) return null;
+
+			item.IsNew = false;
 			if (item.Deleted && !includeDeleted) {
 				return null;
 			}
@@ -138,11 +141,11 @@ namespace CHABS.API.Services {
 		/// <param name="whereClause"></param>
 		/// <param name="ignorePerpetual"></param>
 		/// <returns></returns>
-		public T GetSingle(string whereClause, object parameters, bool ignorePerpetual = false) {
+		public T GetSingle(string whereClause, object parameters, bool includeDeleted = false) {
 			// Add required params
 			var poco = Activator.CreateInstance<T>();
-			if (poco.Perpetual && !ignorePerpetual) {
-				whereClause = whereClause.InsertBefore(" and deleted = true ", new[] { "order by", "group by" });
+			if (poco.Perpetual && !includeDeleted) {
+				whereClause = whereClause.InsertBefore(" and deleted = false ", new[] { "order by", "group by" });
 			}
 			var item = db.GetList<T>(whereClause, parameters).FirstOrDefault();
 			return item;

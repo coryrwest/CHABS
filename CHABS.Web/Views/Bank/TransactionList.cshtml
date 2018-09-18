@@ -1,8 +1,9 @@
-﻿@using CHABS.Models
+﻿@using CHABS.Controllers
+@using CHABS.Models
 @model CHABS.Models.TransactionsViewModel
 
 @section SecondaryNav {
-	@Html.Partial("_BankNavPartial")
+    @Html.Partial("_BankNavPartial")
 }
 
 <h2>@Model.RangeString</h2>
@@ -21,11 +22,13 @@
                     </tr>
                     @foreach (var transaction in Model.Transations) {
                         <tr>
-                            <td>@transaction.Date.ToShortDateString()</td>
-                            <td>@string.Format("{0:C}", transaction.Amount)</td>
-                            <td>@transaction.Description</td>
-                            <td>@transaction.Source</td>
-                            <td>@transaction.Category</td>
+                            <td>@transaction.Transaction.Date.ToShortDateString()</td>
+                            <td>@string.Format("{0:C}", transaction.Transaction.Amount)</td>
+                            <td>
+                                @((transaction.Transaction.RelatedID != Guid.Empty) ? Html.Raw($"<a href='https://www.amazon.com/gp/your-account/order-details/ref=oh_aui_or_o07_?ie=UTF8&orderID={transaction.Related}' target='_blank'>{transaction.Transaction.Description}</a>") : Html.Raw(transaction.Transaction.Description))
+                            </td>
+                            <td>@transaction.Transaction.Source</td>
+                            <td>@transaction.Transaction.Category</td>
                         </tr>
                     }
                 <tbody>
@@ -33,31 +36,75 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-12">
-        <form asp-action="UpdateTransactions">
-            <button type="submit" class="btn btn-primary">Update Transactions</button>
+    <div class="col-md-6">
+        <form asp-action="@nameof(BankController.FetchTransactions)"
+              data-ajax="true"
+              data-ajax-begin="onBeginFetch"
+              data-ajax-complete="onCompleteFetch"
+              data-ajax-mode="replace"
+              data-ajax-update="#fetch"
+              data-ajax-method="POST" class="form-horizontal">
+            <button type="submit" class="btn btn-primary" id="fetch">Fetch Transactions</button>
         </form>
+        <form asp-action="@nameof(BankController.MatchTransactions)"
+              data-ajax="true"
+              data-ajax-begin="onBegin"
+              data-ajax-complete="onComplete"
+              data-ajax-mode="replace"
+              data-ajax-update="#match"
+              data-ajax-method="GET" class="form-horizontal">
+            <input type="hidden" name="monthsDifference" id="monthsDifference" value="@Model.MonthsDifference" />
+            <button type="submit" class="btn btn-primary" id="match">Match Transactions</button>
+        </form>
+    </div>
+    <div class="col-md-6">
+        @if (Model.MonthsDifference <= 0) {
+        <a href="@Url.Action(nameof(BankController.TransactionList), new {monthsDifference = Model.MonthsDifference - 1})" class="btn btn-primary">Last Month</a>
+        }
+                        @if (Model.MonthsDifference < 0) {
+            <a href="@Url.Action(nameof(BankController.TransactionList), new { monthsDifference = Model.MonthsDifference + 1})" class="btn btn-primary">Next Month</a>
+        }
     </div>
 </div>
 
 @section Scripts {
-	@*@Scripts.Render("~/bundles/react-container")
-		@Scripts.Render("~/bundles/react-app")*@
-	@*@Scripts.Render("~/bundles/table")*@
+    @*@Scripts.Render("~/bundles/react-container")
+        @Scripts.Render("~/bundles/react-app")*@
+    @*@Scripts.Render("~/bundles/table")*@
 
-	<script>
-		$(document).ready(function () {
-			var editor = new $.fn.dataTable.Editor({
-				ajax: '/api/staff',
-				table: '#transactions',
-				fields: [
-					{ label: 'Date', name: 'date' },
-					{ label: 'Amount', name: 'amount' },
-					{ label: 'Description', name: 'description' },
-					{ label: 'Source', name: 'source' },
-					{ label: 'Category', name: 'category' }
-				]
-			});
-		});
-	</script>
+    <script>
+        function onBeginFetch() {
+            $('#fetch').html('Fetching');
+        }
+
+        function onCompleteFetch() {
+            setTimeout(function () {
+                document.location.reload();
+            }, 2000);
+        }
+
+        function onBegin() {
+            $('#match').html('Matching');
+        }
+
+        function onComplete() {
+            setTimeout(function () {
+                document.location.reload();
+            }, 2000);
+        }
+
+        $(document).ready(function() {
+            var editor = new $.fn.dataTable.Editor({
+                ajax: '/api/staff',
+                table: '#transactions',
+                fields: [
+                    { label: 'Date', name: 'date' },
+                    { label: 'Amount', name: 'amount' },
+                    { label: 'Description', name: 'description' },
+                    { label: 'Source', name: 'source' },
+                    { label: 'Category', name: 'category' }
+                ]
+            });
+        });
+    </script>
 }

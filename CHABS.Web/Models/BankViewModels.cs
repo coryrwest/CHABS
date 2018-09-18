@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using CHABS.API.Objects;
+using CHABS.API.Services.DataServices;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CHABS.Models {
@@ -36,10 +39,34 @@ namespace CHABS.Models {
 	}
 
 	public class TransactionsViewModel {
+		public TransactionsViewModel(Session se, List<AccountTransaction> transactions) {
+			Transations = new List<TransactionWithRelated>();
+
+			foreach (var accountTransaction in transactions) {
+				if (accountTransaction.RelatedID != Guid.Empty) {
+					// Find the related item and get the id
+					var service = new AmazonOrderService(se);
+					var related = service.GetById(accountTransaction.RelatedID);
+					Transations.Add(new TransactionWithRelated() {
+						Transaction = accountTransaction,
+						Related = related?.OrderId
+					});
+				}
+				else {
+					Transations.Add(new TransactionWithRelated() {
+						Transaction = accountTransaction,
+						Related = ""
+					});
+				}
+			}
+		}
+
 		[DataType(DataType.Date)]
 		public DateTime StartDate { get; set; }
 		[DataType(DataType.Date)]
 		public DateTime EndDate { get; set; }
+
+		public int MonthsDifference { get; set; }
 
 		/// <summary>
 		/// String for range of transactions
@@ -47,7 +74,12 @@ namespace CHABS.Models {
 		public string RangeString { get; set; }
 
 		public List<Guid> Logins { get; set; }
-		public List<AccountTransaction> Transations { get; set; }
+		public List<TransactionWithRelated> Transations { get; set;  }
+
+		public class TransactionWithRelated {
+			public AccountTransaction Transaction { get; set; }
+			public string Related { get; set; }
+		}
 	}
 
 	public class CategoriesViewModel {
@@ -112,5 +144,10 @@ namespace CHABS.Models {
 		}
 
 		public List<Category> CurrentBudgetCategorys { get; set; }
+	}
+
+	public class UploadAmazonTransactionsViewModel {
+		[DataType(DataType.Upload)]
+		public IFormFile Orders { get; set; }
 	}
 }

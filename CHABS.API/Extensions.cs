@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace CHABS.API {
 	public static class Extensions {
@@ -105,19 +106,83 @@ namespace CHABS.API {
 	            list.Select(item => string.Format(formatString, item)));
 	    }
 
-	    public static string InsertBefore(this string str, string insert, object[] stringsToCheck) {
+		public static string Truncate(this string value, int maxChars) {
+			return value.Length <= maxChars ? value : value.Substring(0, maxChars) + "...";
+		}
+
+		public static string InsertBefore(this string str, string insert, object[] stringsToCheck) {
 	        var lastIndex = 0;
             foreach (string check in stringsToCheck) {
-                if (lastIndex == 0) {
+                if (lastIndex >= 0) {
                     lastIndex = str.IndexOf(check, StringComparison.Ordinal);
                 }
 	        }
 
-	        var firstPart = str.Substring(0, lastIndex);
-	        var lastPart = str.Substring(lastIndex, str.Length - lastIndex);
+			// Spitting is different based on whether we find a match or not
+		    var firstPart = "";
+		    var lastPart = "";
+
+		    if (lastIndex == -1) {
+			    firstPart = str;
+		    }
+		    else {
+				firstPart = str.Substring(0, lastIndex);
+			    lastPart = str.Substring(lastIndex, str.Length - lastIndex);
+			}
 
 	        return firstPart + insert + lastPart;
 	    }
-    }
+
+		/// <summary>
+		/// Will import all matching properties from source to dest excluding provided members.
+		/// If a property in destination is not null and in source it is null, it will not be imported.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="source"></param>
+		/// <param name="exclusions"></param>
+		public static void Import(this object destination, object source, params string[] exclusions) {
+			// If any this null throw an exception
+			if (source == null || destination == null)
+				throw new Exception("Source or/and Destination Objects are null");
+			// Getting the Types of the objects
+			Type typeDest = destination.GetType();
+			Type typeSrc = source.GetType();
+
+			// Iterate the Properties of the source instance and  
+			// populate them from their desination counterparts  
+			PropertyInfo[] srcProps = typeSrc.GetProperties();
+			foreach (PropertyInfo srcProp in srcProps) {
+				if (!srcProp.CanRead) {
+					continue;
+				}
+				PropertyInfo targetProperty = typeDest.GetProperty(srcProp.Name);
+				if (targetProperty == null) {
+					continue;
+				}
+				if (!targetProperty.CanWrite) {
+					continue;
+				}
+				if (targetProperty.GetSetMethod(true) != null && targetProperty.GetSetMethod(true).IsPrivate) {
+					continue;
+				}
+				if ((targetProperty.GetSetMethod().Attributes & MethodAttributes.Static) != 0) {
+					continue;
+				}
+				if (!targetProperty.PropertyType.IsAssignableFrom(srcProp.PropertyType)) {
+					continue;
+				}
+				// If target property is part of exclusions, ignore
+				if (exclusions.Contains(targetProperty.Name)) {
+					continue;
+				}
+				// If source is null and destination is not, ignore
+				if (srcProp.GetValue(source, null) == null && targetProperty.GetValue(destination, null) != null) {
+					continue;
+				}
+				// Passed all tests, lets set the value
+				targetProperty.SetValue(destination, srcProp.GetValue(source, null), null);
+			}
+		}
+	}
 
 }

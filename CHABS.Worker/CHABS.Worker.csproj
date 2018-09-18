@@ -9,4 +9,10 @@
     <ProjectReference Include="..\CHABS.API\CHABS.API.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="orders.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

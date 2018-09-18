@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using CHABS.API;
 using CHABS.API.Objects;
 using CHABS.API.Services;
@@ -19,14 +22,19 @@ namespace CHABS.Worker
 
 	        var services = new DataService(session);
 			var bankService = new PlaidService();
-			
-		    DoUpdate(services, bankService, new PlaidOptions() {
-			    ClientSecret = "be06908ed5e2b09607cd9a193b5777",
-			    ClientId = "55849d453b5cadf40371c371",
-			    Env = "Development",
-			    Url = "https://development.plaid.com"
-			}, session);
-	    }
+
+			//   DoUpdate(services, bankService, new PlaidOptions() {
+			//    ClientSecret = "be06908ed5e2b09607cd9a193b5777",
+			//    ClientId = "55849d453b5cadf40371c371",
+			//    Env = "Development",
+			//    Url = "https://development.plaid.com"
+			//}, session);
+
+	        var items = AmazonOrderService.ParseOrderCsv(new StreamReader(@"orders.csv"));
+	        var orders = AmazonOrderService.SaveAmazonOrderList(session, items);
+	        AmazonOrderService.AttachAmazonOrders(session, orders);
+
+        }
 
 	    public static void DoUpdate(DataService services, PlaidService BankService, PlaidOptions plaidOptions, Session session) {
 		    var loginIds = services.BankConnections.GetListForHousehold(session.HouseholdId);
@@ -41,4 +49,5 @@ namespace CHABS.Worker
 		    }
 	    }
 	}
+
 }

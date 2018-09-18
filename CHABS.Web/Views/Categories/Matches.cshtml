@@ -8,14 +8,15 @@
 <h3>Matching for @Model.CategoryName</h3>
 <div class="col-md-12">
 	<div class="col-md-6">
-		@*@using (Ajax.BeginForm("CategoryMatches", null, new AjaxOptions() {
-				HttpMethod = "POST",
-				UpdateTargetId = "results",
-				OnBegin = "AjaxBegin",
-				OnComplete = "AjaxComplete"
-			}, new { @class = "form-horizontal" })) {
-			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
-			<form class="form-horizontal">
+	    <p>A Category Matcher is how a transaction is matched to a category. The Match text will be compared to the transaction description to determine if it is a match for the Category.</p>
+	    <form asp-action="Matches" asp-controller="Categories" 
+	          data-ajax="true"
+	          data-ajax-begin="onBegin" 
+	          data-ajax-complete="onComplete"
+	          data-ajax-mode="replace"
+	          data-ajax-update="#results"
+	          data-ajax-method="POST" class="form-horizontal">
+	        <div asp-validation-summary="All"></div>
 				<div class="form-group">
 					@Html.LabelFor(m => m.Match, new {@class = "col-md-3 control-label"})
 					<div class="col-md-9">
@@ -30,7 +31,6 @@
 					</div>
 				</div>
 			</form>
-			}*@
 	</div>
 	<div class="col-md-6" id="results">
 		@Html.Partial("CategoryMatchListPartial", new CategoryMatchesListViewModel(Model.CurrentCategoryMatches))
@@ -39,15 +39,13 @@
 
 
 @section Scripts {
-	@*@Scripts.Render("~/bundles/form")
-	@Scripts.Render("~/bundles/ajax")*@
 
 	<script>
-		function AjaxBegin() {
+		function onBegin() {
 			$('#results').html('');
 		}
 
-		function AjaxComplete() {
+		function onComplete() {
 			$('form').last()[0].reset();
 		}
 

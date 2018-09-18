@@ -1,4 +1,5 @@
-﻿@using CHABS.Models
+﻿@using CHABS.Controllers
+@using CHABS.Models
 @model CHABS.Models.BankLoginViewModel
 @{
 	ViewBag.Title = "Logins";
@@ -20,7 +21,8 @@
 	                <th></th>
 	                <th></th>
                     <th></th>
-                    <th></th>
+	                <th></th>
+	                <th></th>
 	            </tr>
 	            @foreach (var login in Model.CurrentLogins) {
 	                <tr>
@@ -33,9 +35,13 @@
 	                    } else {
 	                        <td><a class="btn btn-sm btn-info disabled">Connected</a></td>
 	                        <td><a class="btn btn-sm btn-default" href="@Url.Action("AccountList", new { loginId = login.Id })">Accounts</a></td>
-                            if (!string.IsNullOrEmpty(login.PublicToken)) {
-                                <td><button class="btn btn-sm btn-default update-link" data-id="@login.PublicToken" data-login="@login.Id">Update Link</button></td>
-                            }
+	                        if (!string.IsNullOrEmpty(login.PublicToken)) {
+	                            <td><button class="btn btn-sm btn-default update-link" data-id="@login.PublicToken" data-login="@login.Id">Update Link</button></td>
+	                        }
+	                        else {
+	                            <td></td>
+	                        }
+	                        <td><a href="@Url.Action(nameof(BankController.Refresh), new { loginId = login.Id})" class="btn btn-sm btn-default">Refresh Accounts</a></td>
                         }
 	                </tr>
 	            }

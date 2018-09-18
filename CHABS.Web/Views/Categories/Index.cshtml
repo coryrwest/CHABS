@@ -7,37 +7,37 @@
 
 <h3>Categories</h3>
 <div class="col-md-12">
-	<div class="col-md-5">
-		@*@using (Ajax.BeginForm("Categories", null, new AjaxOptions() {
-				HttpMethod = "POST",
-				UpdateTargetId = "results",
-				OnBegin = "AjaxBegin",
-				OnComplete = "AjaxComplete"
-			}, new { @class = "form-horizontal" })) {
-			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
-			<form class="form-horizontal">
-				<div class="form-group">
-					@Html.LabelFor(m => m.Name, new { @class = "col-md-3 control-label" })
-					<div class="col-md-9">
-						@Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
-						@Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
-					</div>
-				</div>
-				<div class="form-group">
-					@Html.LabelFor(m => m.Excluded, new { @class = "col-md-3 control-label" })
-					<div class="col-md-9">
-						@Html.CheckBoxFor(m => m.Excluded, new { @class = "form-control" })
-						@Html.ValidationMessageFor(m => m.Excluded, "", new { @class = "text-danger" })
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-offset-2 col-sm-10">
-						<button type="submit" class="btn btn-default">Add Category</button>
-					</div>
-				</div>
-			</form>
-			}*@
-	</div>
+    <div class="col-md-5">
+        <p>A Category is how you attach a budget to a transaction. A Category can only be attached to one Budget. A Category is matched against transactions using Category Matchers.</p>
+        <form asp-action="Index" asp-controller="Categories" 
+              data-ajax="true"
+              data-ajax-begin="onBegin" 
+              data-ajax-complete="onComplete"
+              data-ajax-mode="replace"
+              data-ajax-update="#results"
+              data-ajax-method="POST" class="form-horizontal">
+            <div asp-validation-summary="All"></div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Name, new {@class = "col-md-3 control-label"})
+                <div class="col-md-9">
+                    @Html.TextBoxFor(m => m.Name, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(m => m.Name, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="form-group">
+                Exclude from Budgets?
+                <div class="col-md-9">
+                    @Html.CheckBoxFor(m => m.Excluded, new {@class = "form-control"})
+                    @Html.ValidationMessageFor(m => m.Excluded, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-default">Add Category</button>
+                </div>
+            </div>
+        </form>
+    </div>
 	<div class="col-md-7" id="results">
 		@Html.Partial("CategoryListPartial", new CategoriesListViewModel(Model.CurrentCategories))
 	</div>
@@ -45,16 +45,14 @@
 
 
 @section Scripts {
-	@*@Scripts.Render("~/bundles/form")
-	@Scripts.Render("~/bundles/ajax")*@
 
 	<script>
-		function AjaxBegin() {
+		function onBegin() {
 			$('#results').html('');
 		}
 
-		function AjaxComplete() {
-			$('form').last()[0].reset()
+        function onComplete() {
+		    $('form').last()[0].reset();
 		}
 
 		$(document).ready(function () {

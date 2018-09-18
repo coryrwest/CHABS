@@ -46,8 +46,7 @@ namespace CHABS.API.DataAccess {
 
         public IEnumerable<T> GetList<T>(string whereClause, object parameters) where T : DataObject {
 			using (connection = new NpgsqlConnection(connectionString)) {
-				IEnumerable<T> list = Query<T>(whereClause, parameters);
-				list.ToList().ForEach(l => l.IsNew = false);
+				IEnumerable<T> list = Query<T>($"select *, false as IsNew from {SimpleCRUD.GetTableName(typeof(T))} where {whereClause}", parameters);
 				return list;
 			}
 		}
@@ -80,7 +79,7 @@ namespace CHABS.API.DataAccess {
 		}
 
 		/// <summary>
-		/// Query the database with DataObject wrapping. Returns first result.
+		/// Query the database with DataObject wrapping.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="sql"></param>
