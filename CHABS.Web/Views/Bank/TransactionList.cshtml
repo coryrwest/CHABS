@@ -8,6 +8,16 @@
 
 <h2>@Model.RangeString</h2>
 <div class="row">
+    <div class="col-md-6">
+        @if (Model.MonthsDifference <= 0) {
+            <a href="@Url.Action(nameof(BankController.TransactionList), new {monthsDifference = Model.MonthsDifference - 1})" class="btn btn-primary">Last Month</a>
+        }
+        @if (Model.MonthsDifference < 0) {
+            <a href="@Url.Action(nameof(BankController.TransactionList), new { monthsDifference = Model.MonthsDifference + 1})" class="btn btn-primary">Next Month</a>
+        }
+    </div>
+</div>
+<div class="row">
     <div class="col-md-12">
         @if (Model.Transations == null || Model.Transations.Count == 0) {
             <div class="alert alert-info">You have no transactions</div>} else {
@@ -44,6 +54,7 @@
               data-ajax-mode="replace"
               data-ajax-update="#fetch"
               data-ajax-method="POST" class="form-horizontal">
+            <input type="hidden" name="monthsDifference" id="monthsDifference" value="@Model.MonthsDifference" />
             <button type="submit" class="btn btn-primary" id="fetch">Fetch Transactions</button>
         </form>
         <form asp-action="@nameof(BankController.MatchTransactions)"
@@ -56,14 +67,6 @@
             <input type="hidden" name="monthsDifference" id="monthsDifference" value="@Model.MonthsDifference" />
             <button type="submit" class="btn btn-primary" id="match">Match Transactions</button>
         </form>
-    </div>
-    <div class="col-md-6">
-        @if (Model.MonthsDifference <= 0) {
-        <a href="@Url.Action(nameof(BankController.TransactionList), new {monthsDifference = Model.MonthsDifference - 1})" class="btn btn-primary">Last Month</a>
-        }
-                        @if (Model.MonthsDifference < 0) {
-            <a href="@Url.Action(nameof(BankController.TransactionList), new { monthsDifference = Model.MonthsDifference + 1})" class="btn btn-primary">Next Month</a>
-        }
     </div>
 </div>
 

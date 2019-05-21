@@ -145,7 +145,7 @@ namespace CHABS.API.Services {
                 start_date = start.ToString("yyyy-MM-dd"),
                 end_date = end.ToString("yyyy-MM-dd"),
                 options = new {
-                    count = 250
+                    count = 500
                 }
             };
             var response = Client.PostAsync($"{options.Url}/transactions/get", new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json")).Result;

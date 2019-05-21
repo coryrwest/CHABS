@@ -207,13 +207,16 @@ namespace CHABS.Controllers {
 		}
 
 		[HttpPost]
-		public ActionResult FetchTransactions() {
+		public ActionResult FetchTransactions(int monthsDifference = 0) {
 			var success = false;
 			var message = "";
 			try {
+				var startDate = DateTime.Now.AddMonths(monthsDifference).FirstDay();
+				var endDate = DateTime.Now.AddMonths(monthsDifference).LastDay();
+
 				var loginIds = Services.BankConnections.GetListForHousehold(GetHouseholdIdForCurrentUser());
 				var options = new TransactionUpdateService.ExecutionContext(loginIds, GetCurrentUserGuid(), Services, BankService);
-				TransactionUpdateService.DoTransactionUpdate(_plaidOptions, options, DateTime.Now.AddMonths(-1).FirstDay(), DateTime.Now.LastDay());
+				TransactionUpdateService.DoTransactionUpdate(_plaidOptions, options, startDate, endDate);
 				success = true;
 				message = "Transaction Update was successful";
 			} catch (Exception ex) {
